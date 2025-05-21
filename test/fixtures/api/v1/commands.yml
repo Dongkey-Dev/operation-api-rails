@@ -1,0 +1,23 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  keyword: MyString
+  description: MyString
+  customerId: 1
+  operationRoomId: 1
+  isActive: false
+  createdAt: 2025-05-22 01:51:41
+  updatedAt: 2025-05-22 01:51:41
+  isDeleted: false
+  deletedAt: 2025-05-22 01:51:41
+
+two:
+  keyword: MyString
+  description: MyString
+  customerId: 1
+  operationRoomId: 1
+  isActive: false
+  createdAt: 2025-05-22 01:51:41
+  updatedAt: 2025-05-22 01:51:41
+  isDeleted: false
+  deletedAt: 2025-05-22 01:51:41

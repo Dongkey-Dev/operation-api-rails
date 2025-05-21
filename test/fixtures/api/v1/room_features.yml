@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  operationRoomId: 1
+  featureId: 1
+  isActive: false
+  createdAt: 2025-05-22 01:51:39
+  updatedAt: 2025-05-22 01:51:39
+
+two:
+  operationRoomId: 1
+  featureId: 1
+  isActive: false
+  createdAt: 2025-05-22 01:51:39
+  updatedAt: 2025-05-22 01:51:39

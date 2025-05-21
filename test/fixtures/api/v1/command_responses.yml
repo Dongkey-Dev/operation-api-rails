@@ -1,0 +1,23 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  commandId: 1
+  content: MyString
+  responseType: MyString
+  priority: 1
+  isActive: false
+  createdAt: 2025-05-22 01:51:42
+  updatedAt: 2025-05-22 01:51:42
+  isDeleted: false
+  deletedAt: 2025-05-22 01:51:42
+
+two:
+  commandId: 1
+  content: MyString
+  responseType: MyString
+  priority: 1
+  isActive: false
+  createdAt: 2025-05-22 01:51:42
+  updatedAt: 2025-05-22 01:51:42
+  isDeleted: false
+  deletedAt: 2025-05-22 01:51:42

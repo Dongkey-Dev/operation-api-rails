@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  operationRoomId: 1
+  planId: 1
+  startDate: 2025-05-22 01:51:37
+  endDate: 2025-05-22 01:51:37
+  createdAt: 2025-05-22 01:51:37
+
+two:
+  operationRoomId: 1
+  planId: 1
+  startDate: 2025-05-22 01:51:37
+  endDate: 2025-05-22 01:51:37
+  createdAt: 2025-05-22 01:51:37

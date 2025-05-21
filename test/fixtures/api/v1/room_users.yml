@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  operationRoomId: 1
+  userId: 
+  nickname: MyString
+  role: MyString
+  joinedAt: 2025-05-22 01:51:40
+  leftAt: 2025-05-22 01:51:40
+
+two:
+  operationRoomId: 1
+  userId: 
+  nickname: MyString
+  role: MyString
+  joinedAt: 2025-05-22 01:51:40
+  leftAt: 2025-05-22 01:51:40

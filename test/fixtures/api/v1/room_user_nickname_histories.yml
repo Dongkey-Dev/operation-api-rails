@@ -1,0 +1,19 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  chatRoomId: 1
+  userId: 1
+  previousNickname: MyString
+  newNickname: MyString
+  createdAt: 2025-05-22 01:51:41
+  isDeleted: false
+  deletedAt: 2025-05-22 01:51:41
+
+two:
+  chatRoomId: 1
+  userId: 1
+  previousNickname: MyString
+  newNickname: MyString
+  createdAt: 2025-05-22 01:51:41
+  isDeleted: false
+  deletedAt: 2025-05-22 01:51:41

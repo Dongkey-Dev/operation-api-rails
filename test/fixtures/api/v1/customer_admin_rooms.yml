@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  adminRoomId: 
+  customerId: 1
+  isActive: false
+  createdAt: 2025-05-22 01:51:36
+
+two:
+  adminRoomId: 
+  customerId: 1
+  isActive: false
+  createdAt: 2025-05-22 01:51:36

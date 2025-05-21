@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  operationRoomId: 1
+  userId: 1
+  eventType: MyString
+  eventAt: 2025-05-22 01:51:40
+
+two:
+  operationRoomId: 1
+  userId: 1
+  eventType: MyString
+  eventAt: 2025-05-22 01:51:40
