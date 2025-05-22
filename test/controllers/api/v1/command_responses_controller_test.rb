@@ -1,6 +1,6 @@
 require "test_helper"
 
-class Api::V1::CommandResponsesControllerTest < ActionDispatch::IntegrationTest
+class CommandResponsesControllerTest < ActionDispatch::IntegrationTest
   setup do
     @api_v1_command_response = api_v1_command_responses(:one)
   end
@@ -11,7 +11,7 @@ class Api::V1::CommandResponsesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create api_v1_command_response" do
-    assert_difference("Api::V1::CommandResponse.count") do
+    assert_difference("CommandResponse.count") do
       post api_v1_command_responses_url, params: { api_v1_command_response: { commandId: @api_v1_command_response.commandId, content: @api_v1_command_response.content, createdAt: @api_v1_command_response.createdAt, deletedAt: @api_v1_command_response.deletedAt, isActive: @api_v1_command_response.isActive, isDeleted: @api_v1_command_response.isDeleted, priority: @api_v1_command_response.priority, responseType: @api_v1_command_response.responseType, updatedAt: @api_v1_command_response.updatedAt } }, as: :json
     end
 
@@ -29,7 +29,7 @@ class Api::V1::CommandResponsesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should destroy api_v1_command_response" do
-    assert_difference("Api::V1::CommandResponse.count", -1) do
+    assert_difference("CommandResponse.count", -1) do
       delete api_v1_command_response_url(@api_v1_command_response), as: :json
     end
 

@@ -1,6 +1,6 @@
 require "test_helper"
 
-class Api::V1::RoomUsersControllerTest < ActionDispatch::IntegrationTest
+class RoomUsersControllerTest < ActionDispatch::IntegrationTest
   setup do
     @api_v1_room_user = api_v1_room_users(:one)
   end
@@ -11,7 +11,7 @@ class Api::V1::RoomUsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create api_v1_room_user" do
-    assert_difference("Api::V1::RoomUser.count") do
+    assert_difference("RoomUser.count") do
       post api_v1_room_users_url, params: { api_v1_room_user: { joinedAt: @api_v1_room_user.joinedAt, leftAt: @api_v1_room_user.leftAt, nickname: @api_v1_room_user.nickname, operationRoomId: @api_v1_room_user.operationRoomId, role: @api_v1_room_user.role, userId: @api_v1_room_user.userId } }, as: :json
     end
 
@@ -29,7 +29,7 @@ class Api::V1::RoomUsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should destroy api_v1_room_user" do
-    assert_difference("Api::V1::RoomUser.count", -1) do
+    assert_difference("RoomUser.count", -1) do
       delete api_v1_room_user_url(@api_v1_room_user), as: :json
     end
 

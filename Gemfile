@@ -44,4 +44,12 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
+  
+  # Factory Bot for generating test data
+  gem "factory_bot_rails"
 end
+
+gem "oas_rails", "~> 0.14.0"
+
+# A Really simple way to filter your resources
+gem "has_scope"

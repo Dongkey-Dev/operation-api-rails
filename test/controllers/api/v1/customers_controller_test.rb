@@ -1,6 +1,6 @@
 require "test_helper"
 
-class Api::V1::CustomersControllerTest < ActionDispatch::IntegrationTest
+class CustomersControllerTest < ActionDispatch::IntegrationTest
   setup do
     @api_v1_customer = api_v1_customers(:one)
   end
@@ -11,7 +11,7 @@ class Api::V1::CustomersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create api_v1_customer" do
-    assert_difference("Api::V1::Customer.count") do
+    assert_difference("Customer.count") do
       post api_v1_customers_url, params: { api_v1_customer: { createdAt: @api_v1_customer.createdAt, email: @api_v1_customer.email, lastLoginAt: @api_v1_customer.lastLoginAt, name: @api_v1_customer.name, password: @api_v1_customer.password, phoneNumber: @api_v1_customer.phoneNumber, updatedAt: @api_v1_customer.updatedAt, userId: @api_v1_customer.userId } }, as: :json
     end
 
@@ -29,7 +29,7 @@ class Api::V1::CustomersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should destroy api_v1_customer" do
-    assert_difference("Api::V1::Customer.count", -1) do
+    assert_difference("Customer.count", -1) do
       delete api_v1_customer_url(@api_v1_customer), as: :json
     end
 

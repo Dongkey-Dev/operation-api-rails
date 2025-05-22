@@ -1,6 +1,6 @@
 require "test_helper"
 
-class Api::V1::ChatMessagesControllerTest < ActionDispatch::IntegrationTest
+class ChatMessagesControllerTest < ActionDispatch::IntegrationTest
   setup do
     @api_v1_chat_message = api_v1_chat_messages(:one)
   end
@@ -11,7 +11,7 @@ class Api::V1::ChatMessagesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create api_v1_chat_message" do
-    assert_difference("Api::V1::ChatMessage.count") do
+    assert_difference("ChatMessage.count") do
       post api_v1_chat_messages_url, params: { api_v1_chat_message: { _id: @api_v1_chat_message._id, content: @api_v1_chat_message.content, createdAt: @api_v1_chat_message.createdAt, operationRoomId: @api_v1_chat_message.operationRoomId, userId: @api_v1_chat_message.userId } }, as: :json
     end
 
@@ -29,7 +29,7 @@ class Api::V1::ChatMessagesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should destroy api_v1_chat_message" do
-    assert_difference("Api::V1::ChatMessage.count", -1) do
+    assert_difference("ChatMessage.count", -1) do
       delete api_v1_chat_message_url(@api_v1_chat_message), as: :json
     end
 

@@ -1,6 +1,6 @@
 require "test_helper"
 
-class Api::V1::FeaturesControllerTest < ActionDispatch::IntegrationTest
+class FeaturesControllerTest < ActionDispatch::IntegrationTest
   setup do
     @api_v1_feature = api_v1_features(:one)
   end
@@ -11,7 +11,7 @@ class Api::V1::FeaturesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create api_v1_feature" do
-    assert_difference("Api::V1::Feature.count") do
+    assert_difference("Feature.count") do
       post api_v1_features_url, params: { api_v1_feature: { createdAt: @api_v1_feature.createdAt, description: @api_v1_feature.description, name: @api_v1_feature.name, updatedAt: @api_v1_feature.updatedAt } }, as: :json
     end
 
@@ -29,7 +29,7 @@ class Api::V1::FeaturesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should destroy api_v1_feature" do
-    assert_difference("Api::V1::Feature.count", -1) do
+    assert_difference("Feature.count", -1) do
       delete api_v1_feature_url(@api_v1_feature), as: :json
     end
 

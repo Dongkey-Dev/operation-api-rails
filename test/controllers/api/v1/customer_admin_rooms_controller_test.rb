@@ -1,6 +1,6 @@
 require "test_helper"
 
-class Api::V1::CustomerAdminRoomsControllerTest < ActionDispatch::IntegrationTest
+class CustomerAdminRoomsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @api_v1_customer_admin_room = api_v1_customer_admin_rooms(:one)
   end
@@ -11,7 +11,7 @@ class Api::V1::CustomerAdminRoomsControllerTest < ActionDispatch::IntegrationTes
   end
 
   test "should create api_v1_customer_admin_room" do
-    assert_difference("Api::V1::CustomerAdminRoom.count") do
+    assert_difference("CustomerAdminRoom.count") do
       post api_v1_customer_admin_rooms_url, params: { api_v1_customer_admin_room: { adminRoomId: @api_v1_customer_admin_room.adminRoomId, createdAt: @api_v1_customer_admin_room.createdAt, customerId: @api_v1_customer_admin_room.customerId, isActive: @api_v1_customer_admin_room.isActive } }, as: :json
     end
 
@@ -29,7 +29,7 @@ class Api::V1::CustomerAdminRoomsControllerTest < ActionDispatch::IntegrationTes
   end
 
   test "should destroy api_v1_customer_admin_room" do
-    assert_difference("Api::V1::CustomerAdminRoom.count", -1) do
+    assert_difference("CustomerAdminRoom.count", -1) do
       delete api_v1_customer_admin_room_url(@api_v1_customer_admin_room), as: :json
     end
 

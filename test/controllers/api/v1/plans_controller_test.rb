@@ -1,6 +1,6 @@
 require "test_helper"
 
-class Api::V1::PlansControllerTest < ActionDispatch::IntegrationTest
+class PlansControllerTest < ActionDispatch::IntegrationTest
   setup do
     @api_v1_plan = api_v1_plans(:one)
   end
@@ -11,7 +11,7 @@ class Api::V1::PlansControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create api_v1_plan" do
-    assert_difference("Api::V1::Plan.count") do
+    assert_difference("Plan.count") do
       post api_v1_plans_url, params: { api_v1_plan: { createdAt: @api_v1_plan.createdAt, description: @api_v1_plan.description, features: @api_v1_plan.features, name: @api_v1_plan.name, price: @api_v1_plan.price, updatedAt: @api_v1_plan.updatedAt } }, as: :json
     end
 
@@ -29,7 +29,7 @@ class Api::V1::PlansControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should destroy api_v1_plan" do
-    assert_difference("Api::V1::Plan.count", -1) do
+    assert_difference("Plan.count", -1) do
       delete api_v1_plan_url(@api_v1_plan), as: :json
     end
 

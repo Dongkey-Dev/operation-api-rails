@@ -1,6 +1,6 @@
 require "test_helper"
 
-class Api::V1::RoomUserNicknameHistoriesControllerTest < ActionDispatch::IntegrationTest
+class RoomUserNicknameHistoriesControllerTest < ActionDispatch::IntegrationTest
   setup do
     @api_v1_room_user_nickname_history = api_v1_room_user_nickname_histories(:one)
   end
@@ -11,7 +11,7 @@ class Api::V1::RoomUserNicknameHistoriesControllerTest < ActionDispatch::Integra
   end
 
   test "should create api_v1_room_user_nickname_history" do
-    assert_difference("Api::V1::RoomUserNicknameHistory.count") do
+    assert_difference("RoomUserNicknameHistory.count") do
       post api_v1_room_user_nickname_histories_url, params: { api_v1_room_user_nickname_history: { chatRoomId: @api_v1_room_user_nickname_history.chatRoomId, createdAt: @api_v1_room_user_nickname_history.createdAt, deletedAt: @api_v1_room_user_nickname_history.deletedAt, isDeleted: @api_v1_room_user_nickname_history.isDeleted, newNickname: @api_v1_room_user_nickname_history.newNickname, previousNickname: @api_v1_room_user_nickname_history.previousNickname, userId: @api_v1_room_user_nickname_history.userId } }, as: :json
     end
 
@@ -29,7 +29,7 @@ class Api::V1::RoomUserNicknameHistoriesControllerTest < ActionDispatch::Integra
   end
 
   test "should destroy api_v1_room_user_nickname_history" do
-    assert_difference("Api::V1::RoomUserNicknameHistory.count", -1) do
+    assert_difference("RoomUserNicknameHistory.count", -1) do
       delete api_v1_room_user_nickname_history_url(@api_v1_room_user_nickname_history), as: :json
     end
 

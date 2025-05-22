@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  mount OasRails::Engine => "/api-docs"
+
   namespace :api do
     namespace :v1 do
       resources :command_responses

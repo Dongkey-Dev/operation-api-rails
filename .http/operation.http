@@ -1,0 +1,591 @@
+@baseUrl = localhost:4002/api/v1
+
+###############################################
+# Customers API
+###############################################
+
+### Get all customers
+GET http://{{baseUrl}}/customers
+
+### Get all customers with includes
+GET http://{{baseUrl}}/customers?include=adminRooms,roomUsers
+
+### Get all customers with includes
+GET http://{{baseUrl}}/customers?include=adminRooms,roomUsers&limit=1
+
+### Get customers with pagination
+GET http://{{baseUrl}}/customers?limit=1
+
+### Get next page of customers
+GET http://{{baseUrl}}/customers?cursor=1645&limit=10
+
+### Get customers with sorting
+GET http://{{baseUrl}}/customers?sortBy=createdAt&sortOrder=desc
+
+### Get customers with pagination, sorting and includes
+GET http://{{baseUrl}}/customers?include=adminRooms&limit=5&sortBy=name&sortOrder=asc
+
+### Get customers with RESTful format (nested relationships)
+GET http://{{baseUrl}}/customers/restful?include=adminRooms,roomUsers&limit=2
+
+### Get customers with RESTful format, pagination and sorting
+GET http://{{baseUrl}}/customers/restful?include=adminRooms,roomUsers&limit=5&sortBy=createdAt&sortOrder=desc
+
+### Get single customer with RESTful format (nested relationships)
+GET http://{{baseUrl}}/customers/restful/1645?include=adminRooms,roomUsers
+
+### Get customer by ID
+GET http://{{baseUrl}}/customers/1
+
+### Get customer by user ID
+GET http://{{baseUrl}}/customers/by-user-id/1
+
+### Get customer by email
+GET http://{{baseUrl}}/customers/by-email/test@example.com
+
+### Create a new customer
+POST http://{{baseUrl}}/customers
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "name": "Test Customer",
+  "email": "test@example.com",
+  "phoneNumber": "123-456-7890",
+  "password": "password123"
+}
+
+### Update a customer
+PUT http://{{baseUrl}}/customers/1
+Content-Type: application/json
+
+{
+  "name": "Updated Customer Name",
+  "email": "updated@example.com",
+  "phoneNumber": "987-654-3210"
+}
+
+### Delete a customer
+DELETE http://{{baseUrl}}/customers/1
+
+### Login a customer
+POST http://{{baseUrl}}/customers/login
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "password123"
+}
+
+### Create multiple customers in batch
+POST http://{{baseUrl}}/customers/batch
+Content-Type: application/json
+
+{
+  "records": [
+    {
+      "userId": 2,
+      "name": "Batch Customer 1",
+      "email": "batch1@example.com",
+      "phoneNumber": "111-222-3333",
+      "password": "password123"
+    },
+    {
+      "userId": 3,
+      "name": "Batch Customer 2",
+      "email": "batch2@example.com",
+      "phoneNumber": "444-555-6666",
+      "password": "password123"
+    }
+  ]
+}
+
+###############################################
+# Plans API
+###############################################
+
+### Get all plans
+GET http://{{baseUrl}}/plans
+
+### Get plan by ID
+GET http://{{baseUrl}}/plans/1
+
+### Get plans by price range
+GET http://{{baseUrl}}/plans/by-price-range/500/1000
+
+### Get plans by feature
+GET http://{{baseUrl}}/plans/by-feature/feature1
+
+### Create a new plan
+POST http://{{baseUrl}}/plans
+Content-Type: application/json
+
+{
+  "name": "Basic Plan",
+  "description": "Basic features for small teams",
+  "price": 999,
+  "features": ["feature1", "feature2", "feature3"]
+}
+
+### Update a plan
+PUT http://{{baseUrl}}/plans/1
+Content-Type: application/json
+
+{
+  "name": "Updated Basic Plan",
+  "description": "Updated features for small teams",
+  "price": 1299,
+  "features": ["feature1", "feature2", "feature3", "feature4"]
+}
+
+### Delete a plan
+DELETE http://{{baseUrl}}/plans/1
+
+### Create multiple plans in batch
+POST http://{{baseUrl}}/plans/batch
+Content-Type: application/json
+
+{
+  "records": [
+    {
+      "name": "Batch Plan 1",
+      "description": "First batch plan",
+      "price": 499,
+      "features": ["feature1", "feature2"]
+    },
+    {
+      "name": "Batch Plan 2",
+      "description": "Second batch plan",
+      "price": 999,
+      "features": ["feature2", "feature3"]
+    }
+  ]
+}
+
+###############################################
+# Operation Rooms API
+###############################################
+
+### Get all operation rooms
+GET http://{{baseUrl}}/operation-rooms
+
+### Get operation room by ID
+GET http://{{baseUrl}}/operation-rooms/1
+
+### Create a new operation room
+POST http://{{baseUrl}}/operation-rooms
+Content-Type: application/json
+
+{
+  "name": "Support Room 1",
+  "description": "Customer support room",
+  "customerId": 1,
+  "status": "active"
+}
+
+### Update an operation room
+PUT http://{{baseUrl}}/operation-rooms/1
+Content-Type: application/json
+
+{
+  "name": "Updated Support Room",
+  "description": "Updated customer support room",
+  "status": "inactive"
+}
+
+### Delete an operation room
+DELETE http://{{baseUrl}}/operation-rooms/1
+
+###############################################
+# Room User Events API
+###############################################
+
+### Get all room user events
+GET http://{{baseUrl}}/room-user-events
+
+### Get room user event by ID
+GET http://{{baseUrl}}/room-user-events/1
+
+### Get room user events by operation room ID
+GET http://{{baseUrl}}/room-user-events/by-room/1
+
+### Get room user events by user ID
+GET http://{{baseUrl}}/room-user-events/by-user/1
+
+### Get room user events by event type
+GET http://{{baseUrl}}/room-user-events/by-type/join
+
+### Create a new room user event
+POST http://{{baseUrl}}/room-user-events
+Content-Type: application/json
+
+{
+  "operationRoomId": 1,
+  "userId": 1,
+  "eventType": "join",
+  "metadata": {"joinedFrom": "web"}
+}
+
+### Update a room user event
+PUT http://{{baseUrl}}/room-user-events/1
+Content-Type: application/json
+
+{
+  "eventType": "leave",
+  "metadata": {"reason": "session timeout"}
+}
+
+### Delete a room user event
+DELETE http://{{baseUrl}}/room-user-events/1
+
+###############################################
+# Room User Nickname Histories API
+###############################################
+
+### Get all nickname histories
+GET http://{{baseUrl}}/room-user-nickname-histories
+
+### Get nickname history by ID
+GET http://{{baseUrl}}/room-user-nickname-histories/1
+
+### Get nickname histories by chat room ID
+GET http://{{baseUrl}}/room-user-nickname-histories/by-room/1
+
+### Get nickname histories by user ID
+GET http://{{baseUrl}}/room-user-nickname-histories/by-user/1
+
+### Create a new nickname history
+POST http://{{baseUrl}}/room-user-nickname-histories
+Content-Type: application/json
+
+{
+  "operationRoomId": 1,
+  "userId": 1,
+  "nickname": "SupportAgent1",
+  "changedBy": 1
+}
+
+### Update a nickname history
+PUT http://{{baseUrl}}/room-user-nickname-histories/1
+Content-Type: application/json
+
+{
+  "nickname": "SeniorSupportAgent",
+  "changedBy": 1
+}
+
+### Delete a nickname history
+DELETE http://{{baseUrl}}/room-user-nickname-histories/1
+
+###############################################
+# Features API
+###############################################
+
+### Get all features
+GET http://{{baseUrl}}/features
+
+### Get feature by ID
+GET http://{{baseUrl}}/features/1
+
+### Create a new feature
+POST http://{{baseUrl}}/features
+Content-Type: application/json
+
+{
+  "name": "Advanced Analytics",
+  "description": "Provides advanced analytics capabilities",
+  "category": "analytics"
+}
+
+### Update a feature
+PUT http://{{baseUrl}}/features/1
+Content-Type: application/json
+
+{
+  "name": "Premium Analytics",
+  "description": "Provides premium analytics capabilities with visualizations",
+  "category": "premium"
+}
+
+### Delete a feature
+DELETE http://{{baseUrl}}/features/1
+
+###############################################
+# Room Features API
+###############################################
+
+### Get all room features
+GET http://{{baseUrl}}/room-features
+
+### Get room feature by ID
+GET http://{{baseUrl}}/room-features/1
+
+### Get room features by room ID
+GET http://{{baseUrl}}/room-features/by-room/1
+
+### Create a new room feature
+POST http://{{baseUrl}}/room-features
+Content-Type: application/json
+
+{
+  "operationRoomId": 1,
+  "featureId": 1,
+  "isEnabled": true
+}
+
+### Update a room feature
+PUT http://{{baseUrl}}/room-features/1
+Content-Type: application/json
+
+{
+  "isEnabled": false
+}
+
+### Delete a room feature
+DELETE http://{{baseUrl}}/room-features/1
+
+###############################################
+# Room Plan Histories API
+###############################################
+
+### Get all plan histories
+GET http://{{baseUrl}}/room-plan-histories
+
+### Get plan history by ID
+GET http://{{baseUrl}}/room-plan-histories/1
+
+### Get plan histories by room ID
+GET http://{{baseUrl}}/room-plan-histories/by-room/1
+
+### Create a new plan history
+POST http://{{baseUrl}}/room-plan-histories
+Content-Type: application/json
+
+{
+  "operationRoomId": 1,
+  "planId": 1,
+  "startDate": "2025-01-01T00:00:00.000Z",
+  "endDate": "2025-12-31T23:59:59.999Z"
+}
+
+### Update a plan history
+PUT http://{{baseUrl}}/room-plan-histories/1
+Content-Type: application/json
+
+{
+  "endDate": "2025-06-30T23:59:59.999Z"
+}
+
+### Delete a plan history
+DELETE http://{{baseUrl}}/room-plan-histories/1
+
+###############################################
+# Customer Admin Rooms API
+###############################################
+
+### Get all customer admin rooms
+GET http://{{baseUrl}}/customer-admin-rooms
+
+### Get customer admin room by ID
+GET http://{{baseUrl}}/customer-admin-rooms/1
+
+### Get customer admin rooms by customer ID
+GET http://{{baseUrl}}/customer-admin-rooms/by-customer/1
+
+### Create a new customer admin room
+POST http://{{baseUrl}}/customer-admin-rooms
+Content-Type: application/json
+
+{
+  "customerId": 1,
+  "operationRoomId": 1,
+  "role": "admin"
+}
+
+### Update a customer admin room
+PUT http://{{baseUrl}}/customer-admin-rooms/1
+Content-Type: application/json
+
+{
+  "role": "owner"
+}
+
+### Delete a customer admin room
+DELETE http://{{baseUrl}}/customer-admin-rooms/1
+
+###############################################
+# Chat Messages API
+###############################################
+
+### Get all chat messages
+GET http://{{baseUrl}}/chat-messages
+
+### Get chat message by ID
+GET http://{{baseUrl}}/chat-messages/1
+
+### Get chat messages by room ID
+GET http://{{baseUrl}}/chat-messages/by-room/1
+
+### Get chat messages by user ID
+GET http://{{baseUrl}}/chat-messages/by-user/1
+
+### Create a new chat message
+POST http://{{baseUrl}}/chat-messages
+Content-Type: application/json
+
+{
+  "operationRoomId": 1,
+  "userId": 1,
+  "content": "Hello, how can I help you today?",
+  "type": "text"
+}
+
+### Update a chat message
+PUT http://{{baseUrl}}/chat-messages/1
+Content-Type: application/json
+
+{
+  "content": "Hello, how may I assist you today?",
+  "isEdited": true
+}
+
+### Delete a chat message
+DELETE http://{{baseUrl}}/chat-messages/1
+
+###############################################
+# Room Users API
+###############################################
+
+### Get all room users
+GET http://{{baseUrl}}/room-users
+
+### Get room user by ID
+GET http://{{baseUrl}}/room-users/1
+
+### Get room users by room ID
+GET http://{{baseUrl}}/room-users/by-room/1
+
+### Get room users by user ID
+GET http://{{baseUrl}}/room-users/by-user/1
+
+### Create a new room user
+POST http://{{baseUrl}}/room-users
+Content-Type: application/json
+
+{
+  "operationRoomId": 1,
+  "userId": 1,
+  "role": "agent",
+  "status": "active"
+}
+
+### Update a room user
+PUT http://{{baseUrl}}/room-users/1
+Content-Type: application/json
+
+{
+  "role": "supervisor",
+  "status": "away"
+}
+
+### Delete a room user
+DELETE http://{{baseUrl}}/room-users/1
+
+###############################################
+# Commands API
+###############################################
+
+### Get all commands
+GET http://{{baseUrl}}/commands
+
+### Get command by ID
+GET http://{{baseUrl}}/commands/1
+
+### Get commands by customer ID
+GET http://{{baseUrl}}/commands/customer/1
+
+### Get commands by operation room ID
+GET http://{{baseUrl}}/commands/room/1
+
+### Get active commands
+GET http://{{baseUrl}}/commands/active
+
+### Get active commands by customer ID
+GET http://{{baseUrl}}/commands/active/customer/1
+
+### Get active commands by operation room ID
+GET http://{{baseUrl}}/commands/active/room/1
+
+### Create a new command
+POST http://{{baseUrl}}/commands
+Content-Type: application/json
+
+{
+  "customerId": 1,
+  "operationRoomId": null,
+  "trigger": "!안녕",
+  "description": "인사 명령어",
+  "isActive": true
+}
+
+### Update a command
+PUT http://{{baseUrl}}/commands/1
+Content-Type: application/json
+
+{
+  "trigger": "!hello",
+  "description": "Updated greeting command",
+  "isActive": true
+}
+
+### Toggle command active status
+PUT http://{{baseUrl}}/commands/toggle-active/1
+
+### Delete a command
+DELETE http://{{baseUrl}}/commands/1
+
+###############################################
+# Command Responses API
+###############################################
+
+### Get all command responses
+GET http://{{baseUrl}}/command-responses
+
+### Get command response by ID
+GET http://{{baseUrl}}/command-responses/1
+
+### Get command responses by command ID
+GET http://{{baseUrl}}/command-responses/by-command/1
+
+### Get active command responses
+GET http://{{baseUrl}}/command-responses/active
+
+### Get active command responses by command ID
+GET http://{{baseUrl}}/command-responses/active/by-command/1
+
+### Create a new command response
+POST http://{{baseUrl}}/command-responses
+Content-Type: application/json
+
+{
+  "commandId": 1,
+  "content": "안녕하세요! 반갑습니다.",
+  "responseType": "text",
+  "isActive": true
+}
+
+### Update a command response
+PUT http://{{baseUrl}}/command-responses/1
+Content-Type: application/json
+
+{
+  "content": "안녕하세요! 무엇을 도와드릴까요?",
+  "responseType": "text",
+  "isActive": true
+}
+
+### Toggle command response active status
+PUT http://{{baseUrl}}/command-responses/1/toggle-active
+
+### Delete a command response
+DELETE http://{{baseUrl}}/command-responses/1
