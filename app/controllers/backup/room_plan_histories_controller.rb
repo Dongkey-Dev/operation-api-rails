@@ -3,7 +3,7 @@ class Api::V1::RoomPlanHistoriesController < ApplicationController
 
   # GET /api/v1/room_plan_histories
   def index
-    @api_v1_room_plan_histories = RoomPlanHistory.all
+    @api_v1_room_plan_histories = Api::V1::RoomPlanHistory.all
 
     render json: @api_v1_room_plan_histories
   end
@@ -15,7 +15,7 @@ class Api::V1::RoomPlanHistoriesController < ApplicationController
 
   # POST /api/v1/room_plan_histories
   def create
-    @api_v1_room_plan_history = RoomPlanHistory.new(api_v1_room_plan_history_params)
+    @api_v1_room_plan_history = Api::V1::RoomPlanHistory.new(api_v1_room_plan_history_params)
 
     if @api_v1_room_plan_history.save
       render json: @api_v1_room_plan_history, status: :created, location: @api_v1_room_plan_history
@@ -41,7 +41,7 @@ class Api::V1::RoomPlanHistoriesController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_api_v1_room_plan_history
-      @api_v1_room_plan_history = RoomPlanHistory.find(params.expect(:id))
+      @api_v1_room_plan_history = Api::V1::RoomPlanHistory.find(params.expect(:id))
     end
 
     # Only allow a list of trusted parameters through.

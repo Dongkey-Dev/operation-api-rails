@@ -12,25 +12,25 @@ class CommandsController < ApplicationController
   # GET /api/v1/commands
   def index
     pagination = pagination_params
-
+    
     # Apply scopes from has_scope
     @commands = apply_scopes(Command).all
-
+    
     # Apply sorting
     if pagination[:sort_by].present?
       @commands = @commands.order(pagination[:sort_by] => pagination[:sort_order])
     end
-
+    
     # Apply cursor-based pagination
     if pagination[:cursor].present?
-      @commands = @commands.where("id > ?", pagination[:cursor])
+      @commands = @commands.where('id > ?', pagination[:cursor])
     end
-
+    
     # Apply limit
     if pagination[:limit].present?
       @commands = @commands.limit(pagination[:limit])
     end
-
+    
     response = {
       data: @commands,
       meta: {
@@ -39,7 +39,7 @@ class CommandsController < ApplicationController
         limit: pagination[:limit]
       }
     }
-
+    
     render json: response
   end
 
@@ -71,7 +71,7 @@ class CommandsController < ApplicationController
   # DELETE /api/v1/commands/1
   def destroy
     @api_v1_command.destroy!
-    render json: { message: "Command successfully deleted" }, status: :ok
+    render json: { message: 'Command successfully deleted' }, status: :ok
   end
 
   private
@@ -79,7 +79,7 @@ class CommandsController < ApplicationController
     def set_api_v1_command
       @api_v1_command = Command.find(params[:id])
     rescue ActiveRecord::RecordNotFound
-      render json: { error: "Command not found" }, status: :not_found
+      render json: { error: 'Command not found' }, status: :not_found
     end
 
     # Only allow a list of trusted parameters through.

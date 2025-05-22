@@ -1,9 +1,9 @@
-class OperationRoomsController < ApplicationController
+class Api::V1::OperationRoomsController < ApplicationController
   before_action :set_api_v1_operation_room, only: %i[ show update destroy ]
 
   # GET /api/v1/operation_rooms
   def index
-    @api_v1_operation_rooms = OperationRoom.all
+    @api_v1_operation_rooms = Api::V1::OperationRoom.all
 
     render json: @api_v1_operation_rooms
   end
@@ -15,7 +15,7 @@ class OperationRoomsController < ApplicationController
 
   # POST /api/v1/operation_rooms
   def create
-    @api_v1_operation_room = OperationRoom.new(api_v1_operation_room_params)
+    @api_v1_operation_room = Api::V1::OperationRoom.new(api_v1_operation_room_params)
 
     if @api_v1_operation_room.save
       render json: @api_v1_operation_room, status: :created, location: @api_v1_operation_room
@@ -41,7 +41,7 @@ class OperationRoomsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_api_v1_operation_room
-      @api_v1_operation_room = OperationRoom.find(params.expect(:id))
+      @api_v1_operation_room = Api::V1::OperationRoom.find(params.expect(:id))
     end
 
     # Only allow a list of trusted parameters through.

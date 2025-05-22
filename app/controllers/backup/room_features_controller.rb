@@ -1,9 +1,9 @@
-class RoomFeaturesController < ApplicationController
+class Api::V1::RoomFeaturesController < ApplicationController
   before_action :set_api_v1_room_feature, only: %i[ show update destroy ]
 
   # GET /api/v1/room_features
   def index
-    @api_v1_room_features = RoomFeature.all
+    @api_v1_room_features = Api::V1::RoomFeature.all
 
     render json: @api_v1_room_features
   end
@@ -15,7 +15,7 @@ class RoomFeaturesController < ApplicationController
 
   # POST /api/v1/room_features
   def create
-    @api_v1_room_feature = RoomFeature.new(api_v1_room_feature_params)
+    @api_v1_room_feature = Api::V1::RoomFeature.new(api_v1_room_feature_params)
 
     if @api_v1_room_feature.save
       render json: @api_v1_room_feature, status: :created, location: @api_v1_room_feature
@@ -41,7 +41,7 @@ class RoomFeaturesController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_api_v1_room_feature
-      @api_v1_room_feature = RoomFeature.find(params.expect(:id))
+      @api_v1_room_feature = Api::V1::RoomFeature.find(params.expect(:id))
     end
 
     # Only allow a list of trusted parameters through.

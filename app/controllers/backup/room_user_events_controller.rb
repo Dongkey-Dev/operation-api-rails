@@ -1,9 +1,9 @@
-class RoomUserEventsController < ApplicationController
+class Api::V1::RoomUserEventsController < ApplicationController
   before_action :set_api_v1_room_user_event, only: %i[ show update destroy ]
 
   # GET /api/v1/room_user_events
   def index
-    @api_v1_room_user_events = RoomUserEvent.all
+    @api_v1_room_user_events = Api::V1::RoomUserEvent.all
 
     render json: @api_v1_room_user_events
   end
@@ -15,7 +15,7 @@ class RoomUserEventsController < ApplicationController
 
   # POST /api/v1/room_user_events
   def create
-    @api_v1_room_user_event = RoomUserEvent.new(api_v1_room_user_event_params)
+    @api_v1_room_user_event = Api::V1::RoomUserEvent.new(api_v1_room_user_event_params)
 
     if @api_v1_room_user_event.save
       render json: @api_v1_room_user_event, status: :created, location: @api_v1_room_user_event
@@ -41,7 +41,7 @@ class RoomUserEventsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_api_v1_room_user_event
-      @api_v1_room_user_event = RoomUserEvent.find(params.expect(:id))
+      @api_v1_room_user_event = Api::V1::RoomUserEvent.find(params.expect(:id))
     end
 
     # Only allow a list of trusted parameters through.

@@ -1,9 +1,9 @@
-class FeaturesController < ApplicationController
+class Api::V1::FeaturesController < ApplicationController
   before_action :set_api_v1_feature, only: %i[ show update destroy ]
 
   # GET /api/v1/features
   def index
-    @api_v1_features = Feature.all
+    @api_v1_features = Api::V1::Feature.all
 
     render json: @api_v1_features
   end
@@ -15,7 +15,7 @@ class FeaturesController < ApplicationController
 
   # POST /api/v1/features
   def create
-    @api_v1_feature = Feature.new(api_v1_feature_params)
+    @api_v1_feature = Api::V1::Feature.new(api_v1_feature_params)
 
     if @api_v1_feature.save
       render json: @api_v1_feature, status: :created, location: @api_v1_feature
@@ -41,7 +41,7 @@ class FeaturesController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_api_v1_feature
-      @api_v1_feature = Feature.find(params.expect(:id))
+      @api_v1_feature = Api::V1::Feature.find(params.expect(:id))
     end
 
     # Only allow a list of trusted parameters through.

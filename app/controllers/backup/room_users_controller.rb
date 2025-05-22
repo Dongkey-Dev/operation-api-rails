@@ -1,9 +1,9 @@
-class RoomUsersController < ApplicationController
+class Api::V1::RoomUsersController < ApplicationController
   before_action :set_api_v1_room_user, only: %i[ show update destroy ]
 
   # GET /api/v1/room_users
   def index
-    @api_v1_room_users = RoomUser.all
+    @api_v1_room_users = Api::V1::RoomUser.all
 
     render json: @api_v1_room_users
   end
@@ -15,7 +15,7 @@ class RoomUsersController < ApplicationController
 
   # POST /api/v1/room_users
   def create
-    @api_v1_room_user = RoomUser.new(api_v1_room_user_params)
+    @api_v1_room_user = Api::V1::RoomUser.new(api_v1_room_user_params)
 
     if @api_v1_room_user.save
       render json: @api_v1_room_user, status: :created, location: @api_v1_room_user
@@ -41,7 +41,7 @@ class RoomUsersController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_api_v1_room_user
-      @api_v1_room_user = RoomUser.find(params.expect(:id))
+      @api_v1_room_user = Api::V1::RoomUser.find(params.expect(:id))
     end
 
     # Only allow a list of trusted parameters through.

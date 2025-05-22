@@ -1,9 +1,9 @@
-class PlansController < ApplicationController
+class Api::V1::PlansController < ApplicationController
   before_action :set_api_v1_plan, only: %i[ show update destroy ]
 
   # GET /api/v1/plans
   def index
-    @api_v1_plans = Plan.all
+    @api_v1_plans = Api::V1::Plan.all
 
     render json: @api_v1_plans
   end
@@ -15,7 +15,7 @@ class PlansController < ApplicationController
 
   # POST /api/v1/plans
   def create
-    @api_v1_plan = Plan.new(api_v1_plan_params)
+    @api_v1_plan = Api::V1::Plan.new(api_v1_plan_params)
 
     if @api_v1_plan.save
       render json: @api_v1_plan, status: :created, location: @api_v1_plan
@@ -41,7 +41,7 @@ class PlansController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_api_v1_plan
-      @api_v1_plan = Plan.find(params.expect(:id))
+      @api_v1_plan = Api::V1::Plan.find(params.expect(:id))
     end
 
     # Only allow a list of trusted parameters through.
