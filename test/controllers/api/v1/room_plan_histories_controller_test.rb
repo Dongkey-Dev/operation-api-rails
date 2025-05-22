@@ -2,35 +2,35 @@ require "test_helper"
 
 class RoomPlanHistoriesControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @api_v1_room_plan_history = api_v1_room_plan_histories(:one)
+    @room_plan_history =  room_plan_histories(:one)
   end
 
   test "should get index" do
-    get api_v1_room_plan_histories_url, as: :json
+    get room_plan_histories_url, as: :json
     assert_response :success
   end
 
-  test "should create api_v1_room_plan_history" do
+  test "should create  room_plan_history" do
     assert_difference("RoomPlanHistory.count") do
-      post api_v1_room_plan_histories_url, params: { api_v1_room_plan_history: { createdAt: @api_v1_room_plan_history.createdAt, endDate: @api_v1_room_plan_history.endDate, operationRoomId: @api_v1_room_plan_history.operationRoomId, planId: @api_v1_room_plan_history.planId, startDate: @api_v1_room_plan_history.startDate } }, as: :json
+      post room_plan_histories_url, params: {  room_plan_history: { createdAt: @room_plan_history.createdAt, endDate: @room_plan_history.endDate, operationRoomId: @room_plan_history.operationRoomId, planId: @room_plan_history.planId, startDate: @room_plan_history.startDate } }, as: :json
     end
 
     assert_response :created
   end
 
-  test "should show api_v1_room_plan_history" do
-    get api_v1_room_plan_history_url(@api_v1_room_plan_history), as: :json
+  test "should show  room_plan_history" do
+    get room_plan_history_url(@room_plan_history), as: :json
     assert_response :success
   end
 
-  test "should update api_v1_room_plan_history" do
-    patch api_v1_room_plan_history_url(@api_v1_room_plan_history), params: { api_v1_room_plan_history: { createdAt: @api_v1_room_plan_history.createdAt, endDate: @api_v1_room_plan_history.endDate, operationRoomId: @api_v1_room_plan_history.operationRoomId, planId: @api_v1_room_plan_history.planId, startDate: @api_v1_room_plan_history.startDate } }, as: :json
+  test "should update  room_plan_history" do
+    patch room_plan_history_url(@room_plan_history), params: {  room_plan_history: { createdAt: @room_plan_history.createdAt, endDate: @room_plan_history.endDate, operationRoomId: @room_plan_history.operationRoomId, planId: @room_plan_history.planId, startDate: @room_plan_history.startDate } }, as: :json
     assert_response :success
   end
 
-  test "should destroy api_v1_room_plan_history" do
+  test "should destroy  room_plan_history" do
     assert_difference("RoomPlanHistory.count", -1) do
-      delete api_v1_room_plan_history_url(@api_v1_room_plan_history), as: :json
+      delete room_plan_history_url(@room_plan_history), as: :json
     end
 
     assert_response :no_content

@@ -15,10 +15,10 @@ class Command < ApplicationRecord
   scope :deleted, -> { where(is_deleted: true) }
   scope :by_customer, ->(customer_id) { where(customer_id: customer_id) }
   scope :by_operation_room, ->(operation_room_id) { where(operation_room_id: operation_room_id) }
-  scope :search_by_keyword, ->(keyword) { where('keyword LIKE ?', "%#{keyword}%") }
+  scope :search_by_keyword, ->(keyword) { where("keyword LIKE ?", "%#{keyword}%") }
 
   # CRUD scopes
-  scope :create_with_defaults, ->(attributes) { 
+  scope :create_with_defaults, ->(attributes) {
     defaults = { is_active: true, is_deleted: false }
     new(defaults.merge(attributes))
   }
@@ -41,7 +41,7 @@ class Command < ApplicationRecord
 
   def customer_or_operation_room_present
     if customer_id.blank? && operation_room_id.blank?
-      errors.add(:base, 'Either customer or operation_room must be present')
+      errors.add(:base, "Either customer or operation_room must be present")
     end
   end
 
@@ -49,14 +49,14 @@ class Command < ApplicationRecord
     if customer_id.present?
       if Command.where(keyword: keyword, customer_id: customer_id)
               .where.not(id: id).exists?
-        errors.add(:keyword, 'already exists for this customer')
+        errors.add(:keyword, "already exists for this customer")
       end
     end
 
     if operation_room_id.present?
       if Command.where(keyword: keyword, operation_room_id: operation_room_id)
               .where.not(id: id).exists?
-        errors.add(:keyword, 'already exists for this operation room')
+        errors.add(:keyword, "already exists for this operation room")
       end
     end
   end

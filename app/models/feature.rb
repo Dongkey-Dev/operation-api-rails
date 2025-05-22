@@ -8,7 +8,7 @@ class Feature < ApplicationRecord
 
   # Scopes
   scope :search_by_name, ->(name) { where("name LIKE ?", "%#{name}%") }
-  scope :with_description, -> { where.not(description: [nil, '']) }
+  scope :with_description, -> { where.not(description: [ nil, "" ]) }
   scope :ordered_by_name, -> { order(name: :asc) }
   scope :ordered_by_created, -> { order(created_at: :desc) }
 

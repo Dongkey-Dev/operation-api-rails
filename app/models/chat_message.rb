@@ -1,7 +1,7 @@
 class ChatMessage < ApplicationRecord
   # Associations
   belongs_to :operation_room
-  belongs_to :user, foreign_key: 'user_id'
+  belongs_to :user, foreign_key: "user_id"
 
   # Validations
   validates :content, presence: true

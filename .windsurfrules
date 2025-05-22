@@ -1,0 +1,200 @@
+version: 1.0
+
+# Rails Application Rules
+rules:
+  # HasScope Integration Rules
+  - name: controller_has_scope
+    pattern: "has_scope"
+    message: "Controllers must use has_scope for filtering"
+    severity: error
+    
+  - name: apply_scopes_usage
+    pattern: "apply_scopes\\("
+    message: "Use apply_scopes in index actions"
+    severity: error
+
+  # Model Scopes
+  - name: model_scope_definition
+    pattern: "scope :.*?, ->"
+    message: "Define scopes using lambda syntax"
+    severity: error
+
+  # Common Scopes per Model
+  - name: customer_scopes
+    pattern: "class Customer.*?end"
+    contains:
+      - "scope :by_user"
+      - "scope :search_by_name"
+      - "scope :search_by_email"
+    message: "Customer model must implement required scopes"
+    severity: error
+
+  - name: operation_room_scopes
+    pattern: "class OperationRoom.*?end"
+    contains:
+      - "scope :by_platform"
+      - "scope :by_room_type"
+      - "scope :by_customer_admin"
+    message: "OperationRoom model must implement required scopes"
+    severity: error
+
+  - name: command_scopes
+    pattern: "class Command.*?end"
+    contains:
+      - "scope :active"
+      - "scope :by_customer"
+      - "scope :by_operation_room"
+    message: "Command model must implement required scopes"
+    severity: error
+
+  - name: chat_message_scopes
+    pattern: "class ChatMessage.*?end"
+    contains:
+      - "scope :by_operation_room"
+      - "scope :by_user"
+      - "scope :created_between"
+    message: "ChatMessage model must implement required scopes"
+    severity: error
+
+  - name: room_user_scopes
+    pattern: "class RoomUser.*?end"
+    contains:
+      - "scope :active"
+      - "scope :by_operation_room"
+      - "scope :by_role"
+    message: "RoomUser model must implement required scopes"
+    severity: error
+
+  # Controller Structure
+  - name: controller_index_structure
+    pattern: "def index"
+    contains:
+      - "apply_scopes"
+      - "pagination_params"
+    message: "Index action must use apply_scopes and pagination"
+    severity: error
+
+  # Soft Delete Pattern
+  - name: soft_delete_implementation
+    pattern: "is_deleted|deleted_at"
+    message: "Use soft delete pattern consistently"
+    severity: warning
+
+  # Timestamp Management
+  - name: timestamp_callback
+    pattern: "ensure_timestamps"
+    message: "Implement timestamp management"
+    severity: warning
+
+  # Role-based Access
+  - name: role_constants
+    pattern: "ROLES = %w\\["
+    message: "Define roles as constants"
+    severity: warning
+
+  # Validation Rules
+  - name: presence_validation
+    pattern: "validates.*?presence: true"
+    message: "Add presence validation for required fields"
+    severity: error
+
+  - name: uniqueness_validation
+    pattern: "validates.*?uniqueness:"
+    message: "Implement uniqueness constraints"
+    severity: error
+
+  # API Response Format
+  - name: json_response_format
+    pattern: "render json:"
+    message: "Use consistent JSON response format"
+    severity: warning
+
+  # Pagy Integration Rules
+  - name: controller_include_pagy
+    pattern: "include Pagy::Backend"
+    message: "Controllers must include Pagy::Backend"
+    severity: error
+    
+  - name: helper_include_pagy
+    pattern: "include Pagy::Frontend"
+    message: "Views must include Pagy::Frontend"
+    severity: error
+
+  - name: pagy_usage
+    pattern: "pagy\\("
+    message: "Use pagy for pagination"
+    severity: error
+
+  # Controller Structure with Pagy
+  - name: controller_index_structure
+    pattern: "def index"
+    contains:
+      - "apply_scopes"
+      - "@pagy, @resources = pagy"
+    message: "Index action must use apply_scopes and pagy for pagination"
+    severity: error
+
+  # API Response Format with Pagy
+  - name: json_response_format
+    pattern: "render json:"
+    contains:
+      - "data:"
+      - "pagy:"
+    message: "Include pagination metadata in JSON response"
+    severity: error
+
+      
+    index_method_pattern: |
+      def index
+        @pagy, @resources = pagy(apply_scopes(Model))
+        render json: {
+          data: @resources,
+          pagy: {
+            page: @pagy.page,
+            items: @pagy.items,
+            pages: @pagy.pages,
+            count: @pagy.count
+          }
+        }
+      end
+
+    # Model-specific pagination configurations
+    model_pagination_defaults:
+      Customer: 20
+      OperationRoom: 15
+      Command: 25
+      ChatMessage: 50
+      RoomUser: 20
+
+# Pagy Configuration
+pagy:
+  items: 20
+  outset: 0
+  size: [1,4,4,1]
+  truncate: true
+
+# Configurations for has_scope
+configurations:
+  controller_patterns:
+    - pattern: "class Api::V1::.*?Controller"
+      required_scopes:
+        - "has_scope :by_.*?"
+        - "has_scope :search_by_.*?"
+        - "has_scope :created_between"
+    - pattern: "class Api::V1::.*?Controller"
+      required_methods:
+        - "include Pagy::Backend"        
+    
+  index_method_pattern: |
+    def index
+      pagination = pagination_params
+      @resources = apply_scopes(Model).page(pagination[:page]).per(pagination[:per_page])
+      render json: { data: @resources }
+    end
+
+# Exclusions
+exclude:
+  - "db/migrate/*"
+  - "config/routes.rb"
+  - "spec/**/*"
+  - "test/**/*"

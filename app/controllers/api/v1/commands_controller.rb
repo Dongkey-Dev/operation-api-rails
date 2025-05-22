@@ -1,5 +1,5 @@
-class CommandsController < ApplicationController
-  before_action :set_api_v1_command, only: %i[ show update destroy ]
+class Api::V1::CommandsController < ApplicationController
+  before_action :set_command, only: %i[ show update destroy ]
 
   # Define scopes that can be used for filtering
   has_scope :active, type: :boolean
@@ -11,46 +11,49 @@ class CommandsController < ApplicationController
 
   # GET /api/v1/commands
   def index
+    # Validate and transform parameters
+    param! :active, :boolean
+    param! :customer_id, Integer, transform: :presence
+    param! :operation_room_id, Integer, transform: :presence
+    param! :limit, Integer, default: 25, min: 1, max: 100
+    param! :cursor, Integer, default: 1, min: 1
+    param! :sortBy, String, in: %w[active created_at updated_at], required: false
+    param! :sortOrder, String, in: %w[asc desc], default: 'asc'
+
+    # Apply scopes and sorting
     pagination = pagination_params
+    base_query = apply_scopes(Command)
 
-    # Apply scopes from has_scope
-    @commands = apply_scopes(Command).all
-
-    # Apply sorting
     if pagination[:sort_by].present?
-      @commands = @commands.order(pagination[:sort_by] => pagination[:sort_order])
+      base_query = base_query.order(pagination[:sort_by] => pagination[:sort_order])
     end
 
-    # Apply cursor-based pagination
-    if pagination[:cursor].present?
-      @commands = @commands.where("id > ?", pagination[:cursor])
-    end
+    # Apply Pagy pagination
+    pagination = pagination_params
+    @pagy, @commands = pagy(base_query, items: pagination[:items])
 
-    # Apply limit
-    if pagination[:limit].present?
-      @commands = @commands.limit(pagination[:limit])
-    end
+    # Calculate next cursor
+    next_cursor = @pagy.page < @pagy.pages ? @pagy.page + 1 : nil
 
-    response = {
+    # Render response with pagination metadata
+    render json: {
       data: @commands,
-      meta: {
-        total: apply_scopes(Command).count,
-        cursor: @commands.last&.id,
-        limit: pagination[:limit]
+      pagination: {
+        limit: @pagy.items,
+        total: @pagy.count,
+        next_cursor: next_cursor
       }
     }
-
-    render json: response
   end
 
   # GET /api/v1/commands/1
   def show
-    render json: { data: @api_v1_command }
+    render json: { data: @command }
   end
 
   # POST /api/v1/commands
   def create
-    @command = Command.new(api_v1_command_params)
+    @command = Command.new(command_params)
 
     if @command.save
       render json: { data: @command }, status: :created
@@ -61,29 +64,29 @@ class CommandsController < ApplicationController
 
   # PATCH/PUT /api/v1/commands/1
   def update
-    if @api_v1_command.update(api_v1_command_params)
-      render json: { data: @api_v1_command }
+    if @command.update(command_params)
+      render json: { data: @command }
     else
-      render json: { errors: @api_v1_command.errors }, status: :unprocessable_entity
+      render json: { errors: @command.errors }, status: :unprocessable_entity
     end
   end
 
   # DELETE /api/v1/commands/1
   def destroy
-    @api_v1_command.destroy!
+    @command.destroy!
     render json: { message: "Command successfully deleted" }, status: :ok
   end
 
   private
     # Use callbacks to share common setup or constraints between actions.
-    def set_api_v1_command
-      @api_v1_command = Command.find(params[:id])
+    def set_command
+      @command = Command.find(params[:id])
     rescue ActiveRecord::RecordNotFound
       render json: { error: "Command not found" }, status: :not_found
     end
 
     # Only allow a list of trusted parameters through.
-    def api_v1_command_params
-      params.require(:command).permit(:keyword, :description, :customer_id, :operation_room_id, :is_active, :created_at, :updated_at, :is_deleted, :deleted_at)
+    def command_params
+      params.require(:command).permit(:keyword, :description, :customer_id, :operation_room_id, :is_active)
     end
 end

@@ -2,35 +2,35 @@ require "test_helper"
 
 class RoomUsersControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @api_v1_room_user = api_v1_room_users(:one)
+    @room_user =  room_users(:one)
   end
 
   test "should get index" do
-    get api_v1_room_users_url, as: :json
+    get room_users_url, as: :json
     assert_response :success
   end
 
-  test "should create api_v1_room_user" do
+  test "should create  room_user" do
     assert_difference("RoomUser.count") do
-      post api_v1_room_users_url, params: { api_v1_room_user: { joinedAt: @api_v1_room_user.joinedAt, leftAt: @api_v1_room_user.leftAt, nickname: @api_v1_room_user.nickname, operationRoomId: @api_v1_room_user.operationRoomId, role: @api_v1_room_user.role, userId: @api_v1_room_user.userId } }, as: :json
+      post room_users_url, params: {  room_user: { joinedAt: @room_user.joinedAt, leftAt: @room_user.leftAt, nickname: @room_user.nickname, operationRoomId: @room_user.operationRoomId, role: @room_user.role, userId: @room_user.userId } }, as: :json
     end
 
     assert_response :created
   end
 
-  test "should show api_v1_room_user" do
-    get api_v1_room_user_url(@api_v1_room_user), as: :json
+  test "should show  room_user" do
+    get room_user_url(@room_user), as: :json
     assert_response :success
   end
 
-  test "should update api_v1_room_user" do
-    patch api_v1_room_user_url(@api_v1_room_user), params: { api_v1_room_user: { joinedAt: @api_v1_room_user.joinedAt, leftAt: @api_v1_room_user.leftAt, nickname: @api_v1_room_user.nickname, operationRoomId: @api_v1_room_user.operationRoomId, role: @api_v1_room_user.role, userId: @api_v1_room_user.userId } }, as: :json
+  test "should update  room_user" do
+    patch room_user_url(@room_user), params: {  room_user: { joinedAt: @room_user.joinedAt, leftAt: @room_user.leftAt, nickname: @room_user.nickname, operationRoomId: @room_user.operationRoomId, role: @room_user.role, userId: @room_user.userId } }, as: :json
     assert_response :success
   end
 
-  test "should destroy api_v1_room_user" do
+  test "should destroy  room_user" do
     assert_difference("RoomUser.count", -1) do
-      delete api_v1_room_user_url(@api_v1_room_user), as: :json
+      delete room_user_url(@room_user), as: :json
     end
 
     assert_response :no_content

@@ -10,8 +10,8 @@ class RoomPlanHistory < ApplicationRecord
   validate :end_date_after_start_date, if: -> { end_date.present? }
 
   # Scopes
-  scope :active, -> { where('end_date IS NULL OR end_date > ?', Time.current) }
-  scope :expired, -> { where('end_date IS NOT NULL AND end_date <= ?', Time.current) }
+  scope :active, -> { where("end_date IS NULL OR end_date > ?", Time.current) }
+  scope :expired, -> { where("end_date IS NOT NULL AND end_date <= ?", Time.current) }
   scope :by_operation_room, ->(operation_room_id) { where(operation_room_id: operation_room_id) }
   scope :by_plan, ->(plan_id) { where(plan_id: plan_id) }
   scope :started_between, ->(start_date, end_date) { where(start_date: start_date..end_date) }
@@ -21,9 +21,9 @@ class RoomPlanHistory < ApplicationRecord
   # CRUD scopes
   scope :create_with_defaults, ->(attributes) { new(attributes) }
   scope :find_by_id, ->(id) { find_by(id: id) }
-  scope :find_active_for_room, ->(room_id) { 
+  scope :find_active_for_room, ->(room_id) {
     where(operation_room_id: room_id)
-      .where('end_date IS NULL OR end_date > ?', Time.current)
+      .where("end_date IS NULL OR end_date > ?", Time.current)
       .order(start_date: :desc)
       .first
   }
@@ -40,7 +40,7 @@ class RoomPlanHistory < ApplicationRecord
 
   def end_date_after_start_date
     if end_date <= start_date
-      errors.add(:end_date, 'must be after start date')
+      errors.add(:end_date, "must be after start date")
     end
   end
 end

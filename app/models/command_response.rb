@@ -17,8 +17,8 @@ class CommandResponse < ApplicationRecord
   scope :by_command, ->(command_id) { where(command_id: command_id) }
 
   # CRUD scopes
-  scope :create_with_defaults, ->(attributes) { 
-    defaults = { response_type: 'text', priority: 0, is_active: true, is_deleted: false }
+  scope :create_with_defaults, ->(attributes) {
+    defaults = { response_type: "text", priority: 0, is_active: true, is_deleted: false }
     new(defaults.merge(attributes))
   }
   scope :find_by_id, ->(id) { find_by(id: id) }
@@ -40,7 +40,7 @@ class CommandResponse < ApplicationRecord
   end
 
   def set_default_values
-    self.response_type ||= 'text'
+    self.response_type ||= "text"
     self.priority ||= 0
     self.is_active = true if is_active.nil?
     self.is_deleted = false if is_deleted.nil?

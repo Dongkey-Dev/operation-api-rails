@@ -1,50 +1,50 @@
-class CustomersController < ApplicationController
-  before_action :set_api_v1_customer, only: %i[ show update destroy show_restful ]
+class Api::V1::CustomersController < ApplicationController
+  before_action :set_customer, only: %i[ show update destroy show_restful ]
 
   # Define scopes that can be used for filtering
   has_scope :by_user, as: :user_id
   has_scope :search_by_name, as: :name
   has_scope :search_by_email, as: :email
-  has_scope :with_recent_login, as: :recent_days, type: :integer
+  has_scope :with_recent_login, as: :recent_days
 
   # GET /api/v1/customers
   def index
+    # Validate scope parameters
+    param! :user_id, Integer, transform: :presence
+    param! :name, String, transform: :strip
+    param! :email, String, transform: :strip
+    param! :recent_days, Integer, transform: :presence
+
     pagination = pagination_params
-    # includes 변수는 현재 사용되지 않지만 나중에 필요할 수 있음
-
-    # Apply scopes from has_scope
-    @customers = apply_scopes(Customer).all
-
-    # Apply sorting
-    if pagination[:sort_by].present?
-      @customers = @customers.order(pagination[:sort_by] => pagination[:sort_order])
+    @resources = apply_scopes(Customer).order(created_at: :desc)
+    
+    if params[:cursor].present?
+      cursor_time = Time.zone.parse(params[:cursor])
+      @resources = @resources.where('created_at < ?', cursor_time)
     end
 
-    # Apply cursor-based pagination
-    if pagination[:cursor].present?
-      @customers = @customers.where("id > ?", pagination[:cursor])
+    if params[:include].present?
+      includes = params[:include].split(',')
+      @resources = @resources.includes(includes)
     end
+    
+    @resources = @resources.limit(pagination[:per_page])
+    total_count = @resources.except(:limit, :offset).count
+    next_cursor = @resources.last&.created_at&.iso8601
 
-    # Apply limit
-    if pagination[:limit].present?
-      @customers = @customers.limit(pagination[:limit])
-    end
-
-    response = {
-      data: @customers,
-      meta: {
-        total: apply_scopes(Customer).count,
-        cursor: @customers.last&.id,
-        limit: pagination[:limit]
+    render json: {
+      data: @resources.as_json(include: params[:include]&.split(',')),
+      pagination: {
+        per_page: pagination[:per_page],
+        total_count: total_count,
+        next_cursor: next_cursor
       }
     }
-
-    render json: response
   end
 
   # GET /api/v1/customers/1
   def show
-    render json: { data: @api_v1_customer }
+    render json: { data: @customer }
   end
 
   # GET /api/v1/customers/by-user-id/:user_id
@@ -61,27 +61,21 @@ class CustomersController < ApplicationController
 
   # GET /api/v1/customers/restful
   def index_restful
+    # Get pagination and include params
     pagination = pagination_params
     includes = include_params
 
-    # Apply scopes from has_scope
-    @customers = apply_scopes(Customer).all
+    # Build base query with scopes and sorting
+    base_query = apply_scopes(Customer)
 
-    # Apply sorting
     if pagination[:sort_by].present?
-      @customers = @customers.order(pagination[:sort_by] => pagination[:sort_order])
+      base_query = base_query.order(pagination[:sort_by] => pagination[:sort_order])
     end
 
-    # Apply cursor-based pagination
-    if pagination[:cursor].present?
-      @customers = @customers.where("id > ?", pagination[:cursor])
-    end
+    # Apply Pagy pagination
+    @pagy, @customers = pagy(base_query, items: 20)
 
-    # Apply limit
-    if pagination[:limit].present?
-      @customers = @customers.limit(pagination[:limit])
-    end
-
+    # Process includes
     result = @customers.map do |customer|
       customer_data = customer.as_json
 
@@ -90,35 +84,35 @@ class CustomersController < ApplicationController
       end
 
       if includes.include?("roomUsers")
-        customer_data["room_users"] = Api::V1::RoomUser.where(user_id: customer.user_id).as_json
+        customer_data["room_users"] = RoomUser.where(user_id: customer.user_id).as_json
       end
 
       customer_data
     end
 
-    response = {
+    # Render response with Pagy metadata
+    render json: {
       data: result,
-      meta: {
-        total: apply_scopes(Customer).count,
-        cursor: @customers.last&.id,
-        limit: pagination[:limit]
+      pagy: {
+        page: @pagy.page,
+        items: @pagy.items,
+        pages: @pagy.pages,
+        count: @pagy.count
       }
     }
-
-    render json: response
   end
 
   # GET /api/v1/customers/restful/:id
   def show_restful
     includes = include_params
-    customer_data = @api_v1_customer.as_json
+    customer_data = @customer.as_json
 
     if includes.include?("adminRooms")
-      customer_data["admin_rooms"] = @api_v1_customer.customer_admin_rooms.as_json
+      customer_data["admin_rooms"] = @customer.customer_admin_rooms.as_json
     end
 
     if includes.include?("roomUsers")
-      customer_data["room_users"] = Api::V1::RoomUser.where(user_id: @api_v1_customer.user_id).as_json
+      customer_data["room_users"] = RoomUser.where(user_id: @customer.user_id).as_json
     end
 
     render json: { data: customer_data }
@@ -126,7 +120,7 @@ class CustomersController < ApplicationController
 
   # POST /api/v1/customers
   def create
-    @customer = Customer.new(api_v1_customer_params)
+    @customer = Customer.new(customer_params)
 
     if @customer.save
       render json: { data: @customer }, status: :created
@@ -137,29 +131,29 @@ class CustomersController < ApplicationController
 
   # PATCH/PUT /api/v1/customers/1
   def update
-    if @api_v1_customer.update(api_v1_customer_params)
-      render json: { data: @api_v1_customer }
+    if @customer.update(customer_params)
+      render json: { data: @customer }
     else
-      render json: { errors: @api_v1_customer.errors }, status: :unprocessable_entity
+      render json: { errors: @customer.errors }, status: :unprocessable_entity
     end
   end
 
   # DELETE /api/v1/customers/1
   def destroy
-    @api_v1_customer.destroy!
+    @customer.destroy!
     render json: { message: "Customer successfully deleted" }, status: :ok
   end
 
   private
     # Use callbacks to share common setup or constraints between actions.
-    def set_api_v1_customer
-      @api_v1_customer = Customer.find(params[:id])
+    def set_customer
+      @customer = Customer.find(params[:id])
     rescue ActiveRecord::RecordNotFound
       render json: { error: "Customer not found" }, status: :not_found
     end
 
     # Only allow a list of trusted parameters through.
-    def api_v1_customer_params
-      params.require(:customer).permit(:user_id, :name, :email, :phone_number, :password, :last_login_at, :created_at, :updated_at)
+    def customer_params
+      params.require(:customer).permit(:user_id, :name, :email, :phone_number, :password, :last_login_at)
     end
 end

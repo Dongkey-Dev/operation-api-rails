@@ -2,35 +2,35 @@ require "test_helper"
 
 class FeaturesControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @api_v1_feature = api_v1_features(:one)
+    @feature =  features(:one)
   end
 
   test "should get index" do
-    get api_v1_features_url, as: :json
+    get features_url, as: :json
     assert_response :success
   end
 
-  test "should create api_v1_feature" do
+  test "should create  feature" do
     assert_difference("Feature.count") do
-      post api_v1_features_url, params: { api_v1_feature: { createdAt: @api_v1_feature.createdAt, description: @api_v1_feature.description, name: @api_v1_feature.name, updatedAt: @api_v1_feature.updatedAt } }, as: :json
+      post features_url, params: {  feature: { createdAt: @feature.createdAt, description: @feature.description, name: @feature.name, updatedAt: @feature.updatedAt } }, as: :json
     end
 
     assert_response :created
   end
 
-  test "should show api_v1_feature" do
-    get api_v1_feature_url(@api_v1_feature), as: :json
+  test "should show  feature" do
+    get feature_url(@feature), as: :json
     assert_response :success
   end
 
-  test "should update api_v1_feature" do
-    patch api_v1_feature_url(@api_v1_feature), params: { api_v1_feature: { createdAt: @api_v1_feature.createdAt, description: @api_v1_feature.description, name: @api_v1_feature.name, updatedAt: @api_v1_feature.updatedAt } }, as: :json
+  test "should update  feature" do
+    patch feature_url(@feature), params: {  feature: { createdAt: @feature.createdAt, description: @feature.description, name: @feature.name, updatedAt: @feature.updatedAt } }, as: :json
     assert_response :success
   end
 
-  test "should destroy api_v1_feature" do
+  test "should destroy  feature" do
     assert_difference("Feature.count", -1) do
-      delete api_v1_feature_url(@api_v1_feature), as: :json
+      delete feature_url(@feature), as: :json
     end
 
     assert_response :no_content

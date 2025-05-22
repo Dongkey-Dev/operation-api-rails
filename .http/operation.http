@@ -1,47 +1,74 @@
-@baseUrl = localhost:4002/api/v1
+@baseUrl = localhost:3000/api/v1
 
 ###############################################
 # Customers API
 ###############################################
 
-### Get all customers
-GET http://{{baseUrl}}/customers
+### List Customers (Basic)
+GET http://{{baseUrl}}/customers?limit=5
 
-### Get all customers with includes
-GET http://{{baseUrl}}/customers?include=adminRooms,roomUsers
+### List Customers (with Cursor Pagination)
+# cursor should be a timestamp in ISO8601 format
+GET http://{{baseUrl}}/customers?limit=5&cursor=2025-05-22T15:33:43Z
 
-### Get all customers with includes
-GET http://{{baseUrl}}/customers?include=adminRooms,roomUsers&limit=1
+### List Customers (with Filtering)
+# Filter by user_id
+GET http://{{baseUrl}}/customers?user_id=38554683
+###
+# Filter by name
+GET http://{{baseUrl}}/customers?name=test
+### 
 
-### Get customers with pagination
-GET http://{{baseUrl}}/customers?limit=1
+# Filter by email
+GET http://{{baseUrl}}/customers?email=test@example.com
 
-### Get next page of customers
-GET http://{{baseUrl}}/customers?cursor=1645&limit=10
+###
+# Filter by recent login (days)
+GET http://{{baseUrl}}/customers?recent_days=7
 
-### Get customers with sorting
-GET http://{{baseUrl}}/customers?sortBy=createdAt&sortOrder=desc
+### List Customers (with Multiple Filters)
+GET http://{{baseUrl}}/customers?user_id=38554683&name=test&limit=5
 
-### Get customers with pagination, sorting and includes
-GET http://{{baseUrl}}/customers?include=adminRooms&limit=5&sortBy=name&sortOrder=asc
+### List Customers (with Includes)
+# Include related rooms
+GET http://{{baseUrl}}/customers?include=admin_rooms
 
-### Get customers with RESTful format (nested relationships)
-GET http://{{baseUrl}}/customers/restful?include=adminRooms,roomUsers&limit=2
+### 
+# Include multiple relations
+GET http://{{baseUrl}}/customers?include=admin_rooms,room_users
 
-### Get customers with RESTful format, pagination and sorting
-GET http://{{baseUrl}}/customers/restful?include=adminRooms,roomUsers&limit=5&sortBy=createdAt&sortOrder=desc
-
-### Get single customer with RESTful format (nested relationships)
-GET http://{{baseUrl}}/customers/restful/1645?include=adminRooms,roomUsers
-
-### Get customer by ID
+### Get Single Customer
+# By ID
 GET http://{{baseUrl}}/customers/1
 
-### Get customer by user ID
+# By User ID
 GET http://{{baseUrl}}/customers/by-user-id/1
 
-### Get customer by email
+# By Email
 GET http://{{baseUrl}}/customers/by-email/test@example.com
+
+### Create Customer
+POST http://{{baseUrl}}/customers
+Content-Type: application/json
+
+{
+  "user_id": 123456,
+  "name": "Test User",
+  "email": "test@example.com",
+  "phone_number": "+821012345678"
+}
+
+### Update Customer
+PATCH http://{{baseUrl}}/customers/1
+Content-Type: application/json
+
+{
+  "name": "Updated Name",
+  "email": "updated@example.com"
+}
+
+### Delete Customer
+DELETE http://{{baseUrl}}/customers/1
 
 ### Create a new customer
 POST http://{{baseUrl}}/customers

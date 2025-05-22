@@ -1,7 +1,7 @@
 class OperationRoom < ApplicationRecord
   # Associations
   belongs_to :customer_admin_room, optional: true
-  belongs_to :customer_admin_user, class_name: 'Customer', optional: true
+  belongs_to :customer_admin_user, class_name: "Customer", optional: true
   has_many :chat_messages, dependent: :destroy
   has_many :commands, dependent: :destroy
   has_many :room_features, dependent: :destroy
@@ -12,7 +12,7 @@ class OperationRoom < ApplicationRecord
   has_many :room_user_events, dependent: :destroy
 
   # Validations
-  validates :chat_room_id, presence: true, uniqueness: { message: 'is already associated with an operation room' }
+  validates :chat_room_id, presence: true, uniqueness: { message: "is already associated with an operation room" }
   validates :platform_type, presence: true, length: { maximum: 20 }
   validates :room_type, presence: true, length: { maximum: 20 }
 
@@ -22,14 +22,14 @@ class OperationRoom < ApplicationRecord
   scope :by_customer_admin, ->(customer_id) { where(customer_admin_user_id: customer_id) }
   scope :by_admin_room, ->(admin_room_id) { where(customer_admin_room_id: admin_room_id) }
   scope :search_by_title, ->(title) { where("title LIKE ? OR origin_title LIKE ?", "%#{title}%", "%#{title}%") }
-  scope :with_due_date_approaching, ->(days) { where('due_date <= ?', Time.current + days.days) }
-  scope :with_due_date_passed, -> { where('due_date < ?', Time.current) }
+  scope :with_due_date_approaching, ->(days) { where("due_date <= ?", Time.current + days.days) }
+  scope :with_due_date_passed, -> { where("due_date < ?", Time.current) }
   scope :ordered_by_created, -> { order(created_at: :desc) }
   scope :ordered_by_updated, -> { order(updated_at: :desc) }
   scope :ordered_by_payment, -> { order(accumulated_payment_amount: :desc) }
 
   # CRUD scopes
-  scope :create_with_defaults, ->(attributes) { 
+  scope :create_with_defaults, ->(attributes) {
     defaults = { accumulated_payment_amount: 0 }
     new(defaults.merge(attributes))
   }
@@ -37,7 +37,7 @@ class OperationRoom < ApplicationRecord
   scope :find_by_chat_room_id, ->(chat_room_id) { find_by(chat_room_id: chat_room_id) }
   scope :update_title, ->(id, new_title) { find_by(id: id)&.update(title: new_title) }
   scope :update_due_date, ->(id, new_due_date) { find_by(id: id)&.update(due_date: new_due_date) }
-  scope :update_payment_amount, ->(id, amount) { 
+  scope :update_payment_amount, ->(id, amount) {
     room = find_by(id: id)
     room&.update(accumulated_payment_amount: room.accumulated_payment_amount + amount)
   }

@@ -4,7 +4,7 @@ class CustomerAdminRoom < ApplicationRecord
   has_many :operation_rooms, dependent: :nullify
 
   # Validations
-  validates :admin_room_id, presence: true, uniqueness: { message: 'is already assigned to a customer' }
+  validates :admin_room_id, presence: true, uniqueness: { message: "is already assigned to a customer" }
   validates :customer_id, presence: true
 
   # Scopes
@@ -14,7 +14,7 @@ class CustomerAdminRoom < ApplicationRecord
   scope :by_admin_room, ->(admin_room_id) { where(admin_room_id: admin_room_id) }
 
   # CRUD scopes
-  scope :create_with_defaults, ->(attributes) { 
+  scope :create_with_defaults, ->(attributes) {
     defaults = { is_active: true }
     new(defaults.merge(attributes))
   }

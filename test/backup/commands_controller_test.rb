@@ -2,35 +2,35 @@ require "test_helper"
 
 class Api::V1::CommandsControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @api_v1_command = api_v1_commands(:one)
+    @command = commands(:one)
   end
 
   test "should get index" do
-    get api_v1_commands_url, as: :json
+    get commands_url, as: :json
     assert_response :success
   end
 
-  test "should create api_v1_command" do
-    assert_difference("Api::V1::Command.count") do
-      post api_v1_commands_url, params: { api_v1_command: { createdAt: @api_v1_command.createdAt, customerId: @api_v1_command.customerId, deletedAt: @api_v1_command.deletedAt, description: @api_v1_command.description, isActive: @api_v1_command.isActive, isDeleted: @api_v1_command.isDeleted, keyword: @api_v1_command.keyword, operationRoomId: @api_v1_command.operationRoomId, updatedAt: @api_v1_command.updatedAt } }, as: :json
+  test "should create command" do
+    assert_difference("Command.count") do
+      post commands_url, params: { command: { createdAt: @command.createdAt, customerId: @command.customerId, deletedAt: @command.deletedAt, description: @command.description, isActive: @command.isActive, isDeleted: @command.isDeleted, keyword: @command.keyword, operationRoomId: @command.operationRoomId, updatedAt: @command.updatedAt } }, as: :json
     end
 
     assert_response :created
   end
 
-  test "should show api_v1_command" do
-    get api_v1_command_url(@api_v1_command), as: :json
+  test "should show command" do
+    get command_url(@command), as: :json
     assert_response :success
   end
 
-  test "should update api_v1_command" do
-    patch api_v1_command_url(@api_v1_command), params: { api_v1_command: { createdAt: @api_v1_command.createdAt, customerId: @api_v1_command.customerId, deletedAt: @api_v1_command.deletedAt, description: @api_v1_command.description, isActive: @api_v1_command.isActive, isDeleted: @api_v1_command.isDeleted, keyword: @api_v1_command.keyword, operationRoomId: @api_v1_command.operationRoomId, updatedAt: @api_v1_command.updatedAt } }, as: :json
+  test "should update command" do
+    patch command_url(@command), params: { command: { createdAt: @command.createdAt, customerId: @command.customerId, deletedAt: @command.deletedAt, description: @command.description, isActive: @command.isActive, isDeleted: @command.isDeleted, keyword: @command.keyword, operationRoomId: @command.operationRoomId, updatedAt: @command.updatedAt } }, as: :json
     assert_response :success
   end
 
-  test "should destroy api_v1_command" do
-    assert_difference("Api::V1::Command.count", -1) do
-      delete api_v1_command_url(@api_v1_command), as: :json
+  test "should destroy command" do
+    assert_difference("Command.count", -1) do
+      delete command_url(@command), as: :json
     end
 
     assert_response :no_content

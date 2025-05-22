@@ -15,12 +15,12 @@ class RoomUserNicknameHistory < ApplicationRecord
   scope :ordered_by_created, -> { order(created_at: :desc) }
 
   # CRUD scopes
-  scope :create_with_defaults, ->(attributes) { 
+  scope :create_with_defaults, ->(attributes) {
     defaults = { is_deleted: false }
     new(defaults.merge(attributes))
   }
   scope :find_by_id, ->(id) { find_by(id: id) }
-  scope :find_latest_for_user_in_room, ->(user_id, chat_room_id) { 
+  scope :find_latest_for_user_in_room, ->(user_id, chat_room_id) {
     where(user_id: user_id, chat_room_id: chat_room_id, is_deleted: false)
       .order(created_at: :desc)
       .first

@@ -2,35 +2,35 @@ require "test_helper"
 
 class PlansControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @api_v1_plan = api_v1_plans(:one)
+    @plan =  plans(:one)
   end
 
   test "should get index" do
-    get api_v1_plans_url, as: :json
+    get plans_url, as: :json
     assert_response :success
   end
 
-  test "should create api_v1_plan" do
+  test "should create  plan" do
     assert_difference("Plan.count") do
-      post api_v1_plans_url, params: { api_v1_plan: { createdAt: @api_v1_plan.createdAt, description: @api_v1_plan.description, features: @api_v1_plan.features, name: @api_v1_plan.name, price: @api_v1_plan.price, updatedAt: @api_v1_plan.updatedAt } }, as: :json
+      post plans_url, params: {  plan: { createdAt: @plan.createdAt, description: @plan.description, features: @plan.features, name: @plan.name, price: @plan.price, updatedAt: @plan.updatedAt } }, as: :json
     end
 
     assert_response :created
   end
 
-  test "should show api_v1_plan" do
-    get api_v1_plan_url(@api_v1_plan), as: :json
+  test "should show  plan" do
+    get plan_url(@plan), as: :json
     assert_response :success
   end
 
-  test "should update api_v1_plan" do
-    patch api_v1_plan_url(@api_v1_plan), params: { api_v1_plan: { createdAt: @api_v1_plan.createdAt, description: @api_v1_plan.description, features: @api_v1_plan.features, name: @api_v1_plan.name, price: @api_v1_plan.price, updatedAt: @api_v1_plan.updatedAt } }, as: :json
+  test "should update  plan" do
+    patch plan_url(@plan), params: {  plan: { createdAt: @plan.createdAt, description: @plan.description, features: @plan.features, name: @plan.name, price: @plan.price, updatedAt: @plan.updatedAt } }, as: :json
     assert_response :success
   end
 
-  test "should destroy api_v1_plan" do
+  test "should destroy  plan" do
     assert_difference("Plan.count", -1) do
-      delete api_v1_plan_url(@api_v1_plan), as: :json
+      delete plan_url(@plan), as: :json
     end
 
     assert_response :no_content

@@ -2,35 +2,35 @@ require "test_helper"
 
 class CustomersControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @api_v1_customer = api_v1_customers(:one)
+    @customer =  customers(:one)
   end
 
   test "should get index" do
-    get api_v1_customers_url, as: :json
+    get customers_url, as: :json
     assert_response :success
   end
 
-  test "should create api_v1_customer" do
+  test "should create  customer" do
     assert_difference("Customer.count") do
-      post api_v1_customers_url, params: { api_v1_customer: { createdAt: @api_v1_customer.createdAt, email: @api_v1_customer.email, lastLoginAt: @api_v1_customer.lastLoginAt, name: @api_v1_customer.name, password: @api_v1_customer.password, phoneNumber: @api_v1_customer.phoneNumber, updatedAt: @api_v1_customer.updatedAt, userId: @api_v1_customer.userId } }, as: :json
+      post customers_url, params: {  customer: { createdAt: @customer.createdAt, email: @customer.email, lastLoginAt: @customer.lastLoginAt, name: @customer.name, password: @customer.password, phoneNumber: @customer.phoneNumber, updatedAt: @customer.updatedAt, userId: @customer.userId } }, as: :json
     end
 
     assert_response :created
   end
 
-  test "should show api_v1_customer" do
-    get api_v1_customer_url(@api_v1_customer), as: :json
+  test "should show  customer" do
+    get customer_url(@customer), as: :json
     assert_response :success
   end
 
-  test "should update api_v1_customer" do
-    patch api_v1_customer_url(@api_v1_customer), params: { api_v1_customer: { createdAt: @api_v1_customer.createdAt, email: @api_v1_customer.email, lastLoginAt: @api_v1_customer.lastLoginAt, name: @api_v1_customer.name, password: @api_v1_customer.password, phoneNumber: @api_v1_customer.phoneNumber, updatedAt: @api_v1_customer.updatedAt, userId: @api_v1_customer.userId } }, as: :json
+  test "should update  customer" do
+    patch customer_url(@customer), params: {  customer: { createdAt: @customer.createdAt, email: @customer.email, lastLoginAt: @customer.lastLoginAt, name: @customer.name, password: @customer.password, phoneNumber: @customer.phoneNumber, updatedAt: @customer.updatedAt, userId: @customer.userId } }, as: :json
     assert_response :success
   end
 
-  test "should destroy api_v1_customer" do
+  test "should destroy  customer" do
     assert_difference("Customer.count", -1) do
-      delete api_v1_customer_url(@api_v1_customer), as: :json
+      delete customer_url(@customer), as: :json
     end
 
     assert_response :no_content

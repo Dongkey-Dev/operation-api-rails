@@ -2,17 +2,19 @@ class Customer < ApplicationRecord
   # Associations
   has_many :commands, dependent: :destroy
   has_many :customer_admin_rooms, dependent: :destroy
-  has_many :operation_rooms, foreign_key: 'customer_admin_user_id', dependent: :nullify
+  has_many :admin_rooms, class_name: 'OperationRoom', foreign_key: 'customer_admin_user_id', dependent: :nullify
+  has_many :room_users, foreign_key: 'user_id', primary_key: 'user_id', dependent: :destroy
+  has_many :operation_rooms, through: :room_users
 
   # Validations
-  validates :user_id, presence: true, uniqueness: { message: 'is already associated with a customer' }
+  validates :user_id, presence: true, uniqueness: { message: "is already associated with a customer" }
   validates :email, format: { with: URI::MailTo::EMAIL_REGEXP, allow_blank: true }
 
   # Scopes
   scope :by_user, ->(user_id) { where(user_id: user_id) }
   scope :search_by_name, ->(name) { where("name LIKE ?", "%#{name}%") }
   scope :search_by_email, ->(email) { where("email LIKE ?", "%#{email}%") }
-  scope :with_recent_login, ->(days) { where('last_login_at > ?', Time.current - days.days) }
+  scope :with_recent_login, ->(days) { where("last_login_at > ?", Time.current - days.days) }
 
   # CRUD scopes
   scope :create_with_defaults, ->(attributes) { new(attributes) }

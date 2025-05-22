@@ -1,51 +1,88 @@
-class ChatMessagesController < ApplicationController
-  before_action :set_api_v1_chat_message, only: %i[ show update destroy ]
+class Api::V1::ChatMessagesController < ApplicationController
+  before_action :set_chat_message, only: %i[ show update destroy ]
+
+  # Define scopes that can be used for filtering
+  has_scope :created_between
+  has_scope :by_operation_room
+  has_scope :by_user
+  has_scope :latest
+  has_scope :oldest
 
   # GET /api/v1/chat_messages
   def index
-    @api_v1_chat_messages = ChatMessage.all
+    # Validate scope parameters
+    param! :operation_room_id, Integer, transform: :presence
+    param! :user_id, Integer, transform: :presence
+    param! :created_between, Array do |p|
+      p.param! :start_date, DateTime
+      p.param! :end_date, DateTime
+    end
 
-    render json: @api_v1_chat_messages
+    # Get pagination params and build base query
+    pagination = pagination_params
+    base_query = apply_scopes(ChatMessage)
+
+    if pagination[:sort_by].present?
+      base_query = base_query.order(pagination[:sort_by] => pagination[:sort_order])
+    end
+
+    # Apply Pagy pagination
+    pagination = pagination_params
+    @pagy, @chat_messages = pagy(base_query, items: pagination[:items])
+
+    # Calculate next cursor
+    next_cursor = @pagy.page < @pagy.pages ? @pagy.page + 1 : nil
+
+    # Render response with pagination metadata
+    render json: {
+      data: @chat_messages,
+      pagination: {
+        limit: @pagy.items,
+        total: @pagy.count,
+        next_cursor: next_cursor
+      }
+    }
   end
 
   # GET /api/v1/chat_messages/1
   def show
-    render json: @api_v1_chat_message
+    render json: @chat_message
   end
 
   # POST /api/v1/chat_messages
   def create
-    @api_v1_chat_message = ChatMessage.new(api_v1_chat_message_params)
+    @chat_message = ChatMessage.new(chat_message_params)
 
-    if @api_v1_chat_message.save
-      render json: @api_v1_chat_message, status: :created, location: @api_v1_chat_message
+    if @chat_message.save
+      render json: @chat_message, status: :created, location: @chat_message
     else
-      render json: @api_v1_chat_message.errors, status: :unprocessable_entity
+      render json: @chat_message.errors, status: :unprocessable_entity
     end
   end
 
   # PATCH/PUT /api/v1/chat_messages/1
   def update
-    if @api_v1_chat_message.update(api_v1_chat_message_params)
-      render json: @api_v1_chat_message
+    if @chat_message.update(chat_message_params)
+      render json: @chat_message
     else
-      render json: @api_v1_chat_message.errors, status: :unprocessable_entity
+      render json: @chat_message.errors, status: :unprocessable_entity
     end
   end
 
   # DELETE /api/v1/chat_messages/1
   def destroy
-    @api_v1_chat_message.destroy!
+    @chat_message.destroy!
+    render json: { message: "Chat message successfully deleted" }, status: :ok
   end
 
   private
     # Use callbacks to share common setup or constraints between actions.
-    def set_api_v1_chat_message
-      @api_v1_chat_message = ChatMessage.find(params.expect(:id))
+    def set_chat_message
+      @chat_message = ChatMessage.find(params.expect(:id))
     end
 
     # Only allow a list of trusted parameters through.
-    def api_v1_chat_message_params
-      params.expect(api_v1_chat_message: [ :_id, :operationRoomId, :userId, :content, :createdAt ])
+    def chat_message_params
+      params.expect(chat_message: [ :operationRoomId, :userId, :content ])
     end
 end

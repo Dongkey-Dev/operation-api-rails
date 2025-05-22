@@ -1,7 +1,7 @@
 class RoomUserEvent < ApplicationRecord
   # Associations
   belongs_to :operation_room
-  belongs_to :user, foreign_key: 'user_id'
+  belongs_to :user, foreign_key: "user_id"
 
   # Validations
   validates :operation_room_id, presence: true
@@ -16,12 +16,12 @@ class RoomUserEvent < ApplicationRecord
   scope :latest_events, ->(limit = 10) { order(event_at: :desc).limit(limit) }
 
   # CRUD scopes
-  scope :create_with_defaults, ->(attributes) { 
+  scope :create_with_defaults, ->(attributes) {
     defaults = { event_at: Time.current }
     new(defaults.merge(attributes))
   }
   scope :find_by_id, ->(id) { find_by(id: id) }
-  scope :find_latest_by_user_and_room, ->(user_id, room_id) { 
+  scope :find_latest_by_user_and_room, ->(user_id, room_id) {
     where(user_id: user_id, operation_room_id: room_id)
       .order(event_at: :desc)
       .first
@@ -42,7 +42,7 @@ class RoomUserEvent < ApplicationRecord
 
   def validate_event_type
     unless EVENT_TYPES.include?(event_type)
-      errors.add(:event_type, 'is not a valid event type')
+      errors.add(:event_type, "is not a valid event type")
     end
   end
 end

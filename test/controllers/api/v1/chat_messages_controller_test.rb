@@ -2,35 +2,35 @@ require "test_helper"
 
 class ChatMessagesControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @api_v1_chat_message = api_v1_chat_messages(:one)
+    @chat_message =  chat_messages(:one)
   end
 
   test "should get index" do
-    get api_v1_chat_messages_url, as: :json
+    get chat_messages_url, as: :json
     assert_response :success
   end
 
-  test "should create api_v1_chat_message" do
+  test "should create  chat_message" do
     assert_difference("ChatMessage.count") do
-      post api_v1_chat_messages_url, params: { api_v1_chat_message: { _id: @api_v1_chat_message._id, content: @api_v1_chat_message.content, createdAt: @api_v1_chat_message.createdAt, operationRoomId: @api_v1_chat_message.operationRoomId, userId: @api_v1_chat_message.userId } }, as: :json
+      post chat_messages_url, params: {  chat_message: { _id: @chat_message._id, content: @chat_message.content, createdAt: @chat_message.createdAt, operationRoomId: @chat_message.operationRoomId, userId: @chat_message.userId } }, as: :json
     end
 
     assert_response :created
   end
 
-  test "should show api_v1_chat_message" do
-    get api_v1_chat_message_url(@api_v1_chat_message), as: :json
+  test "should show  chat_message" do
+    get chat_message_url(@chat_message), as: :json
     assert_response :success
   end
 
-  test "should update api_v1_chat_message" do
-    patch api_v1_chat_message_url(@api_v1_chat_message), params: { api_v1_chat_message: { _id: @api_v1_chat_message._id, content: @api_v1_chat_message.content, createdAt: @api_v1_chat_message.createdAt, operationRoomId: @api_v1_chat_message.operationRoomId, userId: @api_v1_chat_message.userId } }, as: :json
+  test "should update  chat_message" do
+    patch chat_message_url(@chat_message), params: {  chat_message: { _id: @chat_message._id, content: @chat_message.content, createdAt: @chat_message.createdAt, operationRoomId: @chat_message.operationRoomId, userId: @chat_message.userId } }, as: :json
     assert_response :success
   end
 
-  test "should destroy api_v1_chat_message" do
+  test "should destroy  chat_message" do
     assert_difference("ChatMessage.count", -1) do
-      delete api_v1_chat_message_url(@api_v1_chat_message), as: :json
+      delete chat_message_url(@chat_message), as: :json
     end
 
     assert_response :no_content

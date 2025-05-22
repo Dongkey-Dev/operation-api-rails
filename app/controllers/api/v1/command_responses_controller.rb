@@ -1,51 +1,52 @@
 class CommandResponsesController < ApplicationController
-  before_action :set_api_v1_command_response, only: %i[ show update destroy ]
+  before_action :set_command_response, only: %i[ show update destroy ]
 
   # GET /api/v1/command_responses
   def index
-    @api_v1_command_responses = CommandResponse.all
+    @command_responses = CommandResponse.all
 
-    render json: @api_v1_command_responses
+    render json: @command_responses
   end
 
   # GET /api/v1/command_responses/1
   def show
-    render json: @api_v1_command_response
+    render json: @command_response
   end
 
   # POST /api/v1/command_responses
   def create
-    @api_v1_command_response = CommandResponse.new(api_v1_command_response_params)
+    @command_response = CommandResponse.new(command_response_params)
 
-    if @api_v1_command_response.save
-      render json: @api_v1_command_response, status: :created, location: @api_v1_command_response
+    if @command_response.save
+      render json: @command_response, status: :created, location: @command_response
     else
-      render json: @api_v1_command_response.errors, status: :unprocessable_entity
+      render json: @command_response.errors, status: :unprocessable_entity
     end
   end
 
   # PATCH/PUT /api/v1/command_responses/1
   def update
-    if @api_v1_command_response.update(api_v1_command_response_params)
-      render json: @api_v1_command_response
+    if @command_response.update(command_response_params)
+      render json: @command_response
     else
-      render json: @api_v1_command_response.errors, status: :unprocessable_entity
+      render json: @command_response.errors, status: :unprocessable_entity
     end
   end
 
   # DELETE /api/v1/command_responses/1
   def destroy
-    @api_v1_command_response.destroy!
+    @command_response.destroy!
+    render json: { message: "Command response successfully deleted" }, status: :ok
   end
 
   private
     # Use callbacks to share common setup or constraints between actions.
-    def set_api_v1_command_response
-      @api_v1_command_response = CommandResponse.find(params.expect(:id))
+    def set_command_response
+      @command_response = CommandResponse.find(params.expect(:id))
     end
 
     # Only allow a list of trusted parameters through.
-    def api_v1_command_response_params
-      params.expect(api_v1_command_response: [ :commandId, :content, :responseType, :priority, :isActive, :createdAt, :updatedAt, :isDeleted, :deletedAt ])
+    def command_response_params
+      params.expect(command_response: [ :commandId, :content, :responseType, :priority, :isActive ])
     end
 end
