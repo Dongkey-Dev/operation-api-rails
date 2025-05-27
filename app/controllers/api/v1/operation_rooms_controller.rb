@@ -1,4 +1,6 @@
 class Api::V1::OperationRoomsController < ApplicationController
+  include Pagy::Backend
+  
   before_action :set_operation_room, only: %i[ show update destroy ]
 
   # Define scopes that can be used for filtering
@@ -14,36 +16,58 @@ class Api::V1::OperationRoomsController < ApplicationController
 
   # GET /api/v1/operation_rooms
   def index
-    # Validate and transform parameters
-    param! :limit, Integer, default: 15, min: 1, max: 100
-    param! :cursor, Integer, default: 1, min: 1
-    param! :sortBy, String, in: %w[platform room_type created_at updated_at], required: false
-    param! :sortOrder, String, in: %w[asc desc], default: 'asc'
-
-    # Get pagination params and build base query
-    pagination = pagination_params
+    # Build base query with scopes
     base_query = apply_scopes(OperationRoom)
 
-    if pagination[:sort_by].present?
-      base_query = base_query.order(pagination[:sort_by] => pagination[:sort_order])
+    # Apply sorting if specified
+    if params[:sortBy].present?
+      sort_by = params[:sortBy]
+      sort_order = params[:sortOrder]&.downcase == 'desc' ? :desc : :asc
+      base_query = base_query.order(sort_by => sort_order)
+    else
+      # Default sorting
+      base_query = base_query.order(created_at: :desc)
     end
 
     # Apply Pagy pagination
-    pagination = pagination_params
-    @pagy, @operation_rooms = pagy(base_query, items: pagination[:items])
-
-    # Calculate next cursor
-    next_cursor = @pagy.page < @pagy.pages ? @pagy.page + 1 : nil
-
-    # Render response with pagination metadata
-    render json: {
-      data: @operation_rooms,
-      pagination: {
-        limit: @pagy.items,
-        total: @pagy.count,
-        next_cursor: next_cursor
+    items_per_page = params[:limit].present? ? params[:limit].to_i : 15
+    page_number = params[:page].present? ? params[:page].to_i : 1
+    
+    begin
+      @pagy, @operation_rooms = pagy(base_query, items: items_per_page, page: page_number)
+      
+      # Determine if there's a next page
+      has_next_page = @pagy.page < @pagy.pages
+      next_page = has_next_page ? @pagy.page + 1 : nil
+      
+      # Render response with pagination metadata following our API standards
+      render json: {
+        data: @operation_rooms,
+        meta: {
+          pagination: {
+            per_page: items_per_page,
+            current_page: @pagy.page,
+            total_pages: @pagy.pages,
+            total_count: @pagy.count,
+            next_page: next_page
+          }
+        }
       }
-    }
+    rescue Pagy::OverflowError
+      # Handle the case where page is out of bounds
+      render json: {
+        data: [],
+        meta: {
+          pagination: {
+            per_page: items_per_page,
+            current_page: page_number,
+            total_pages: 0,
+            total_count: 0,
+            next_page: nil
+          }
+        }
+      }
+    end
   end
 
   # GET /api/v1/operation_rooms/1
@@ -79,11 +103,15 @@ class Api::V1::OperationRoomsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_operation_room
-      @operation_room = OperationRoom.find(params.expect(:id))
+      @operation_room = OperationRoom.find(params[:id])
     end
 
     # Only allow a list of trusted parameters through.
     def operation_room_params
-      params.expect(operation_room: [ :chatRoomId, :openChatLink, :originTitle, :title, :accumulatedPaymentAmount, :platformType, :roomType, :customerAdminRoomId, :customerAdminUserId, :dueDate, :createdAt, :updatedAt ])
+      params.require(:operation_room).permit(
+        :chatRoomId, :openChatLink, :originTitle, :title, :accumulatedPaymentAmount, 
+        :platformType, :roomType, :customerAdminRoomId, :customerAdminUserId, 
+        :dueDate, :createdAt, :updatedAt
+      )
     end
 end

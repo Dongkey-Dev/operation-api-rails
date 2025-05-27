@@ -1,15 +1,19 @@
-@baseUrl = localhost:3000/api/v1
+@baseUrl = localhost:3001/api/v1
 
 ###############################################
 # Customers API
 ###############################################
 
 ### List Customers (Basic)
-GET http://{{baseUrl}}/customers?limit=5
+GET http://{{baseUrl}}/customers
 
 ### List Customers (with Cursor Pagination)
 # cursor should be a timestamp in ISO8601 format
-GET http://{{baseUrl}}/customers?limit=5&cursor=2025-05-22T15:33:43Z
+GET http://{{baseUrl}}/customers?limit=5&order_by=created_at&cursor=eyJ2YWx1ZSI6IjIwMjUtMDUtMjJUMTU6MzM6NDMuMzY3MDAwWiIsImlkIjo0fQ==
+
+###
+# Sort by created_at descending
+GET http://{{baseUrl}}/customers?order_by=created_at&order_direction=DESC
 
 ### List Customers (with Filtering)
 # Filter by user_id
@@ -42,10 +46,10 @@ GET http://{{baseUrl}}/customers?include=admin_rooms,room_users
 GET http://{{baseUrl}}/customers/1
 
 # By User ID
-GET http://{{baseUrl}}/customers/by-user-id/1
+GET http://{{baseUrl}}/customers/by_user_id/1
 
 # By Email
-GET http://{{baseUrl}}/customers/by-email/test@example.com
+GET http://{{baseUrl}}/customers/by_email/test@example.com
 
 ### Create Customer
 POST http://{{baseUrl}}/customers
@@ -137,12 +141,6 @@ GET http://{{baseUrl}}/plans
 ### Get plan by ID
 GET http://{{baseUrl}}/plans/1
 
-### Get plans by price range
-GET http://{{baseUrl}}/plans/by-price-range/500/1000
-
-### Get plans by feature
-GET http://{{baseUrl}}/plans/by-feature/feature1
-
 ### Create a new plan
 POST http://{{baseUrl}}/plans
 Content-Type: application/json
@@ -194,13 +192,13 @@ Content-Type: application/json
 ###############################################
 
 ### Get all operation rooms
-GET http://{{baseUrl}}/operation-rooms
+GET http://{{baseUrl}}/operation_rooms
 
 ### Get operation room by ID
-GET http://{{baseUrl}}/operation-rooms/1
+GET http://{{baseUrl}}/operation_rooms/1
 
 ### Create a new operation room
-POST http://{{baseUrl}}/operation-rooms
+POST http://{{baseUrl}}/operation_rooms
 Content-Type: application/json
 
 {
@@ -211,7 +209,7 @@ Content-Type: application/json
 }
 
 ### Update an operation room
-PUT http://{{baseUrl}}/operation-rooms/1
+PUT http://{{baseUrl}}/operation_rooms/1
 Content-Type: application/json
 
 {
@@ -221,88 +219,88 @@ Content-Type: application/json
 }
 
 ### Delete an operation room
-DELETE http://{{baseUrl}}/operation-rooms/1
+DELETE http://{{baseUrl}}/operation_rooms/1
 
-###############################################
-# Room User Events API
-###############################################
+# ###############################################
+# # Room User Events API
+# ###############################################
 
-### Get all room user events
-GET http://{{baseUrl}}/room-user-events
+# ### Get all room user events
+# GET http://{{baseUrl}}/room_user_events
 
-### Get room user event by ID
-GET http://{{baseUrl}}/room-user-events/1
+# ### Get room user event by ID
+# GET http://{{baseUrl}}/room_user_events/1
 
-### Get room user events by operation room ID
-GET http://{{baseUrl}}/room-user-events/by-room/1
+# ### Get room user events by operation room ID
+# GET http://{{baseUrl}}/room_user_events/by_room/1
 
-### Get room user events by user ID
-GET http://{{baseUrl}}/room-user-events/by-user/1
+# ### Get room user events by user ID
+# GET http://{{baseUrl}}/room_user_events/by_user/1
 
-### Get room user events by event type
-GET http://{{baseUrl}}/room-user-events/by-type/join
+# ### Get room user events by event type
+# GET http://{{baseUrl}}/room_user_events/by_type/join
 
-### Create a new room user event
-POST http://{{baseUrl}}/room-user-events
-Content-Type: application/json
+# ### Create a new room user event
+# POST http://{{baseUrl}}/room_user_events
+# Content-Type: application/json
 
-{
-  "operationRoomId": 1,
-  "userId": 1,
-  "eventType": "join",
-  "metadata": {"joinedFrom": "web"}
-}
+# {
+#   "operationRoomId": 1,
+#   "userId": 1,
+#   "eventType": "join",
+#   "metadata": {"joinedFrom": "web"}
+# }
 
-### Update a room user event
-PUT http://{{baseUrl}}/room-user-events/1
-Content-Type: application/json
+# ### Update a room user event
+# PUT http://{{baseUrl}}/room_user_events/1
+# Content-Type: application/json
 
-{
-  "eventType": "leave",
-  "metadata": {"reason": "session timeout"}
-}
+# {
+#   "eventType": "leave",
+#   "metadata": {"reason": "session timeout"}
+# }
 
-### Delete a room user event
-DELETE http://{{baseUrl}}/room-user-events/1
+# ### Delete a room user event
+# DELETE http://{{baseUrl}}/room_user_events/1
 
-###############################################
-# Room User Nickname Histories API
-###############################################
+# ###############################################
+# # Room User Nickname Histories API
+# ###############################################
 
-### Get all nickname histories
-GET http://{{baseUrl}}/room-user-nickname-histories
+# ### Get all nickname histories
+# GET http://{{baseUrl}}/room_user_nickname_histories
 
-### Get nickname history by ID
-GET http://{{baseUrl}}/room-user-nickname-histories/1
+# ### Get nickname history by ID
+# GET http://{{baseUrl}}/room_user_nickname_histories/1
 
-### Get nickname histories by chat room ID
-GET http://{{baseUrl}}/room-user-nickname-histories/by-room/1
+# ### Get nickname histories by chat room ID
+# GET http://{{baseUrl}}/room_user_nickname_histories/by_room/1
 
-### Get nickname histories by user ID
-GET http://{{baseUrl}}/room-user-nickname-histories/by-user/1
+# ### Get nickname histories by user ID
+# GET http://{{baseUrl}}/room_user_nickname_histories/by_user/1
 
-### Create a new nickname history
-POST http://{{baseUrl}}/room-user-nickname-histories
-Content-Type: application/json
+# ### Create a new nickname history
+# POST http://{{baseUrl}}/room_user_nickname_histories
+# Content-Type: application/json
 
-{
-  "operationRoomId": 1,
-  "userId": 1,
-  "nickname": "SupportAgent1",
-  "changedBy": 1
-}
+# {
+#   "operationRoomId": 1,
+#   "userId": 1,
+#   "nickname": "SupportAgent1",
+#   "changedBy": 1
+# }
 
-### Update a nickname history
-PUT http://{{baseUrl}}/room-user-nickname-histories/1
-Content-Type: application/json
+# ### Update a nickname history
+# PUT http://{{baseUrl}}/room_user_nickname_histories/1
+# Content-Type: application/json
 
-{
-  "nickname": "SeniorSupportAgent",
-  "changedBy": 1
-}
+# {
+#   "nickname": "SeniorSupportAgent",
+#   "changedBy": 1
+# }
 
-### Delete a nickname history
-DELETE http://{{baseUrl}}/room-user-nickname-histories/1
+# ### Delete a nickname history
+# DELETE http://{{baseUrl}}/room_user_nickname_histories/1
 
 ###############################################
 # Features API
@@ -342,16 +340,16 @@ DELETE http://{{baseUrl}}/features/1
 ###############################################
 
 ### Get all room features
-GET http://{{baseUrl}}/room-features
+GET http://{{baseUrl}}/room_features
 
 ### Get room feature by ID
-GET http://{{baseUrl}}/room-features/1
+GET http://{{baseUrl}}/room_features/1
 
 ### Get room features by room ID
-GET http://{{baseUrl}}/room-features/by-room/1
+GET http://{{baseUrl}}/room_features/by_room/1
 
 ### Create a new room feature
-POST http://{{baseUrl}}/room-features
+POST http://{{baseUrl}}/room_features
 Content-Type: application/json
 
 {
@@ -361,7 +359,7 @@ Content-Type: application/json
 }
 
 ### Update a room feature
-PUT http://{{baseUrl}}/room-features/1
+PUT http://{{baseUrl}}/room_features/1
 Content-Type: application/json
 
 {
@@ -369,23 +367,23 @@ Content-Type: application/json
 }
 
 ### Delete a room feature
-DELETE http://{{baseUrl}}/room-features/1
+DELETE http://{{baseUrl}}/room_features/1
 
 ###############################################
 # Room Plan Histories API
 ###############################################
 
 ### Get all plan histories
-GET http://{{baseUrl}}/room-plan-histories
+GET http://{{baseUrl}}/room_plan_histories
 
 ### Get plan history by ID
-GET http://{{baseUrl}}/room-plan-histories/1
+GET http://{{baseUrl}}/room_plan_histories/1
 
 ### Get plan histories by room ID
-GET http://{{baseUrl}}/room-plan-histories/by-room/1
+GET http://{{baseUrl}}/room_plan_histories/by_room/1
 
 ### Create a new plan history
-POST http://{{baseUrl}}/room-plan-histories
+POST http://{{baseUrl}}/room_plan_histories
 Content-Type: application/json
 
 {
@@ -396,7 +394,7 @@ Content-Type: application/json
 }
 
 ### Update a plan history
-PUT http://{{baseUrl}}/room-plan-histories/1
+PUT http://{{baseUrl}}/room_plan_histories/1
 Content-Type: application/json
 
 {
@@ -404,23 +402,23 @@ Content-Type: application/json
 }
 
 ### Delete a plan history
-DELETE http://{{baseUrl}}/room-plan-histories/1
+DELETE http://{{baseUrl}}/room_plan_histories/1
 
 ###############################################
 # Customer Admin Rooms API
 ###############################################
 
 ### Get all customer admin rooms
-GET http://{{baseUrl}}/customer-admin-rooms
+GET http://{{baseUrl}}/customer_admin_rooms
 
 ### Get customer admin room by ID
-GET http://{{baseUrl}}/customer-admin-rooms/1
+GET http://{{baseUrl}}/customer_admin_rooms/1
 
 ### Get customer admin rooms by customer ID
-GET http://{{baseUrl}}/customer-admin-rooms/by-customer/1
+GET http://{{baseUrl}}/customer_admin_rooms/by_customer/1
 
 ### Create a new customer admin room
-POST http://{{baseUrl}}/customer-admin-rooms
+POST http://{{baseUrl}}/customer_admin_rooms
 Content-Type: application/json
 
 {
@@ -430,7 +428,7 @@ Content-Type: application/json
 }
 
 ### Update a customer admin room
-PUT http://{{baseUrl}}/customer-admin-rooms/1
+PUT http://{{baseUrl}}/customer_admin_rooms/1
 Content-Type: application/json
 
 {
@@ -438,26 +436,26 @@ Content-Type: application/json
 }
 
 ### Delete a customer admin room
-DELETE http://{{baseUrl}}/customer-admin-rooms/1
+DELETE http://{{baseUrl}}/customer_admin_rooms/1
 
 ###############################################
 # Chat Messages API
 ###############################################
 
 ### Get all chat messages
-GET http://{{baseUrl}}/chat-messages
+GET http://{{baseUrl}}/chat_messages
 
 ### Get chat message by ID
-GET http://{{baseUrl}}/chat-messages/1
+GET http://{{baseUrl}}/chat_messages/1
 
 ### Get chat messages by room ID
-GET http://{{baseUrl}}/chat-messages/by-room/1
+GET http://{{baseUrl}}/chat_messages/by_room/1
 
 ### Get chat messages by user ID
-GET http://{{baseUrl}}/chat-messages/by-user/1
+GET http://{{baseUrl}}/chat_messages/by_user/1
 
 ### Create a new chat message
-POST http://{{baseUrl}}/chat-messages
+POST http://{{baseUrl}}/chat_messages
 Content-Type: application/json
 
 {
@@ -468,7 +466,7 @@ Content-Type: application/json
 }
 
 ### Update a chat message
-PUT http://{{baseUrl}}/chat-messages/1
+PUT http://{{baseUrl}}/chat_messages/1
 Content-Type: application/json
 
 {
@@ -477,26 +475,26 @@ Content-Type: application/json
 }
 
 ### Delete a chat message
-DELETE http://{{baseUrl}}/chat-messages/1
+DELETE http://{{baseUrl}}/chat_messages/1
 
 ###############################################
 # Room Users API
 ###############################################
 
 ### Get all room users
-GET http://{{baseUrl}}/room-users
+GET http://{{baseUrl}}/room_users
 
 ### Get room user by ID
-GET http://{{baseUrl}}/room-users/1
+GET http://{{baseUrl}}/room_users/1
 
 ### Get room users by room ID
-GET http://{{baseUrl}}/room-users/by-room/1
+GET http://{{baseUrl}}/room_users/by_room/3?limit=100
 
 ### Get room users by user ID
-GET http://{{baseUrl}}/room-users/by-user/1
+GET http://{{baseUrl}}/room_users/by_user/1
 
 ### Create a new room user
-POST http://{{baseUrl}}/room-users
+POST http://{{baseUrl}}/room_users
 Content-Type: application/json
 
 {
@@ -507,7 +505,7 @@ Content-Type: application/json
 }
 
 ### Update a room user
-PUT http://{{baseUrl}}/room-users/1
+PUT http://{{baseUrl}}/room_users/1
 Content-Type: application/json
 
 {
@@ -516,7 +514,7 @@ Content-Type: application/json
 }
 
 ### Delete a room user
-DELETE http://{{baseUrl}}/room-users/1
+DELETE http://{{baseUrl}}/room_users/1
 
 ###############################################
 # Commands API
@@ -566,7 +564,7 @@ Content-Type: application/json
 }
 
 ### Toggle command active status
-PUT http://{{baseUrl}}/commands/toggle-active/1
+PUT http://{{baseUrl}}/commands/toggle_active/1
 
 ### Delete a command
 DELETE http://{{baseUrl}}/commands/1
@@ -576,22 +574,22 @@ DELETE http://{{baseUrl}}/commands/1
 ###############################################
 
 ### Get all command responses
-GET http://{{baseUrl}}/command-responses
+GET http://{{baseUrl}}/command_responses
 
 ### Get command response by ID
-GET http://{{baseUrl}}/command-responses/1
+GET http://{{baseUrl}}/command_responses/1
 
 ### Get command responses by command ID
-GET http://{{baseUrl}}/command-responses/by-command/1
+GET http://{{baseUrl}}/command_responses/by_command/1
 
 ### Get active command responses
-GET http://{{baseUrl}}/command-responses/active
+GET http://{{baseUrl}}/command_responses/active
 
 ### Get active command responses by command ID
-GET http://{{baseUrl}}/command-responses/active/by-command/1
+GET http://{{baseUrl}}/command_responses/active/by_command/1
 
 ### Create a new command response
-POST http://{{baseUrl}}/command-responses
+POST http://{{baseUrl}}/command_responses
 Content-Type: application/json
 
 {
@@ -602,7 +600,7 @@ Content-Type: application/json
 }
 
 ### Update a command response
-PUT http://{{baseUrl}}/command-responses/1
+PUT http://{{baseUrl}}/command_responses/1
 Content-Type: application/json
 
 {
@@ -612,7 +610,7 @@ Content-Type: application/json
 }
 
 ### Toggle command response active status
-PUT http://{{baseUrl}}/command-responses/1/toggle-active
+PUT http://{{baseUrl}}/command_responses/1/toggle_active
 
 ### Delete a command response
-DELETE http://{{baseUrl}}/command-responses/1
+DELETE http://{{baseUrl}}/command_responses/1

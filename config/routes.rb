@@ -7,7 +7,12 @@ Rails.application.routes.draw do
       resources :commands
       resources :room_user_nickname_histories
       resources :room_user_events
-      resources :room_users
+      resources :room_users do
+        collection do
+          get 'by_room/:id', to: 'room_users#by_room'
+          get 'by_user/:id', to: 'room_users#by_user'
+        end
+      end
       resources :chat_messages
       resources :room_features
       resources :features

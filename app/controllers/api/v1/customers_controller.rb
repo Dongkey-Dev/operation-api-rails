@@ -1,4 +1,6 @@
 class Api::V1::CustomersController < ApplicationController
+  include CursorPagination
+  
   before_action :set_customer, only: %i[ show update destroy show_restful ]
 
   # Define scopes that can be used for filtering
@@ -16,24 +18,22 @@ class Api::V1::CustomersController < ApplicationController
     param! :recent_days, Integer, transform: :presence
 
     pagination = pagination_params
-    @resources = apply_scopes(Customer).order(created_at: :desc)
-    
-    if params[:cursor].present?
-      cursor_time = Time.zone.parse(params[:cursor])
-      @resources = @resources.where('created_at < ?', cursor_time)
-    end
+    @resources = apply_scopes(Customer).order(id: :desc)
 
     if params[:include].present?
-      includes = params[:include].split(',')
+      includes = params[:include].split(",")
       @resources = @resources.includes(includes)
     end
-    
-    @resources = @resources.limit(pagination[:per_page])
+
+    @resources = apply_cursor_pagination(@resources)
     total_count = @resources.except(:limit, :offset).count
-    next_cursor = @resources.last&.created_at&.iso8601
+    
+    # Get the last record for next cursor
+    last_record = @resources.last
+    next_cursor = last_record ? encode_cursor(last_record, cursor_params[:order_by]) : nil
 
     render json: {
-      data: @resources.as_json(include: params[:include]&.split(',')),
+      data: @resources.as_json(include: params[:include]&.split(",")),
       pagination: {
         per_page: pagination[:per_page],
         total_count: total_count,
