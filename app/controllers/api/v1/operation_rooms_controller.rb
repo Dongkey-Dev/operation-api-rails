@@ -1,6 +1,6 @@
 class Api::V1::OperationRoomsController < ApplicationController
   include Pagy::Backend
-  
+
   before_action :set_operation_room, only: %i[ show update destroy ]
 
   # Define scopes that can be used for filtering
@@ -22,7 +22,7 @@ class Api::V1::OperationRoomsController < ApplicationController
     # Apply sorting if specified
     if params[:sortBy].present?
       sort_by = params[:sortBy]
-      sort_order = params[:sortOrder]&.downcase == 'desc' ? :desc : :asc
+      sort_order = params[:sortOrder]&.downcase == "desc" ? :desc : :asc
       base_query = base_query.order(sort_by => sort_order)
     else
       # Default sorting
@@ -32,14 +32,14 @@ class Api::V1::OperationRoomsController < ApplicationController
     # Apply Pagy pagination
     items_per_page = params[:limit].present? ? params[:limit].to_i : 15
     page_number = params[:page].present? ? params[:page].to_i : 1
-    
+
     begin
       @pagy, @operation_rooms = pagy(base_query, items: items_per_page, page: page_number)
-      
+
       # Determine if there's a next page
       has_next_page = @pagy.page < @pagy.pages
       next_page = has_next_page ? @pagy.page + 1 : nil
-      
+
       # Render response with pagination metadata following our API standards
       render json: {
         data: @operation_rooms,
@@ -109,8 +109,8 @@ class Api::V1::OperationRoomsController < ApplicationController
     # Only allow a list of trusted parameters through.
     def operation_room_params
       params.require(:operation_room).permit(
-        :chatRoomId, :openChatLink, :originTitle, :title, :accumulatedPaymentAmount, 
-        :platformType, :roomType, :customerAdminRoomId, :customerAdminUserId, 
+        :chatRoomId, :openChatLink, :originTitle, :title, :accumulatedPaymentAmount,
+        :platformType, :roomType, :customerAdminRoomId, :customerAdminUserId,
         :dueDate, :createdAt, :updatedAt
       )
     end

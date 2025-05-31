@@ -7,12 +7,7 @@ Rails.application.routes.draw do
       resources :commands
       resources :room_user_nickname_histories
       resources :room_user_events
-      resources :room_users do
-        collection do
-          get 'by_room/:id', to: 'room_users#by_room'
-          get 'by_user/:id', to: 'room_users#by_user'
-        end
-      end
+      resources :room_users
       resources :chat_messages
       resources :room_features
       resources :features
@@ -20,7 +15,12 @@ Rails.application.routes.draw do
       resources :plans
       resources :operation_rooms
       resources :customer_admin_rooms
-      resources :customers
+      resources :customers do
+        collection do
+          get 'by-user-id/:user_id', to: 'customers#by_user_id'
+          get 'by-email/:email', to: 'customers#by_email', constraints: { email: /.+/ }
+        end
+      end
     end
   end
 

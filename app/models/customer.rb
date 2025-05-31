@@ -2,9 +2,12 @@ class Customer < ApplicationRecord
   # Associations
   has_many :commands, dependent: :destroy
   has_many :customer_admin_rooms, dependent: :destroy
-  has_many :admin_rooms, class_name: 'OperationRoom', foreign_key: 'customer_admin_user_id', dependent: :nullify
-  has_many :room_users, foreign_key: 'user_id', primary_key: 'user_id', dependent: :destroy
-  has_many :operation_rooms, through: :room_users
+  has_many :admin_rooms, class_name: "OperationRoom", foreign_key: "customer_admin_user_id", dependent: :nullify
+  has_many :room_users, foreign_key: "user_id", primary_key: "user_id", dependent: :destroy
+  has_many :member_operation_rooms, through: :room_users, source: :operation_room
+  
+  # We can't use a direct has_many association for operation_rooms because we need to combine two different
+  # sources of rooms. Instead, we'll modify the CustomersController to handle this special case.
 
   # Validations
   validates :user_id, presence: true, uniqueness: { message: "is already associated with a customer" }

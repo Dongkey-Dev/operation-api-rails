@@ -67,6 +67,7 @@ ActiveRecord::Schema[8.0].define(version: 0) do
     t.datetime "last_login_at", precision: nil
     t.datetime "created_at", precision: nil, default: -> { "now()" }
     t.datetime "updated_at", precision: nil, default: -> { "now()" }
+    t.text "token"
 
     t.unique_constraint ["user_id"], name: "customers_user_id_unique"
   end

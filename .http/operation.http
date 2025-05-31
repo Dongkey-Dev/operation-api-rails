@@ -34,22 +34,38 @@ GET http://{{baseUrl}}/customers?recent_days=7
 GET http://{{baseUrl}}/customers?user_id=38554683&name=test&limit=5
 
 ### List Customers (with Includes)
-# Include related rooms
-GET http://{{baseUrl}}/customers?include=admin_rooms
+# Include commands associated with customers
+GET http://{{baseUrl}}/customers?include=commands
 
-### 
-# Include multiple relations
-GET http://{{baseUrl}}/customers?include=admin_rooms,room_users
+### Include customer_admin_rooms
+GET http://{{baseUrl}}/customers?include=customer_admin_rooms
+
+### Include admin_rooms (operation rooms where customer is admin)
+GET http://{{baseUrl}}/customers?include=customer_admin_rooms
+
+### Include room_users (all room user records for the customer)
+GET http://{{baseUrl}}/customers?include=room_users
+
+### Include operation_rooms (all operation rooms the customer is part of)
+GET http://{{baseUrl}}/customers?include=operation_rooms,customer_admin_rooms
+
+### Include operation_rooms (now includes both member rooms and admin rooms)
+# This will include operation rooms where the customer is a member through room_users
+# AND operation rooms where customer_admin_user_id = customer.id
+GET http://{{baseUrl}}/customers?include=operation_rooms
+
+### Include multiple relations
+GET http://{{baseUrl}}/customers?include=room_users,operation_rooms,customer_admin_rooms
 
 ### Get Single Customer
 # By ID
 GET http://{{baseUrl}}/customers/1
 
 # By User ID
-GET http://{{baseUrl}}/customers/by_user_id/1
+GET http://{{baseUrl}}/customers/by-user-id/38554683
 
 # By Email
-GET http://{{baseUrl}}/customers/by_email/test@example.com
+GET http://{{baseUrl}}/customers/by-email/test@example.com
 
 ### Create Customer
 POST http://{{baseUrl}}/customers
@@ -192,7 +208,25 @@ Content-Type: application/json
 ###############################################
 
 ### Get all operation rooms
-GET http://{{baseUrl}}/operation_rooms
+GET http://{{baseUrl}}/operation_rooms?limit=100
+
+### Filter operation rooms by platform
+GET http://{{baseUrl}}/operation_rooms?by_platform=KAKAO
+
+### Filter operation rooms by room type
+GET http://{{baseUrl}}/operation_rooms?by_room_type=OPEN_CHAT
+
+### Filter operation rooms by customer admin
+GET http://{{baseUrl}}/operation_rooms?by_customer_admin=1
+
+### Filter operation rooms by admin room
+GET http://{{baseUrl}}/operation_rooms?by_admin_room=true
+
+### Filter operation rooms with multiple scopes
+GET http://{{baseUrl}}/operation_rooms?by_platform=kakao&by_room_type=group
+
+### Filter and paginate operation rooms
+GET http://{{baseUrl}}/operation_rooms?by_platform=kakao&page=1&limit=10
 
 ### Get operation room by ID
 GET http://{{baseUrl}}/operation_rooms/1

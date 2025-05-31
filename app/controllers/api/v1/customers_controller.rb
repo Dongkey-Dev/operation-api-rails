@@ -1,7 +1,9 @@
 class Api::V1::CustomersController < ApplicationController
   include CursorPagination
-  
-  before_action :set_customer, only: %i[ show update destroy show_restful ]
+  include OperationRoomsIncludable
+  include Pagy::Backend
+
+  before_action :set_customer, only: %i[show update destroy]
 
   # Define scopes that can be used for filtering
   has_scope :by_user, as: :user_id
@@ -17,103 +19,128 @@ class Api::V1::CustomersController < ApplicationController
     param! :email, String, transform: :strip
     param! :recent_days, Integer, transform: :presence
 
-    pagination = pagination_params
+    # Process include parameters
+    includes = process_include_params
+    has_operation_rooms = includes.delete(:operation_rooms)
+
+    # Build base query with scopes
     @resources = apply_scopes(Customer).order(id: :desc)
 
-    if params[:include].present?
-      includes = params[:include].split(",")
-      @resources = @resources.includes(includes)
-    end
+    # Apply eager loading for included associations
+    @resources = @resources.includes(includes) if includes.any?
 
+    # Apply cursor pagination
     @resources = apply_cursor_pagination(@resources)
     total_count = @resources.except(:limit, :offset).count
-    
+
     # Get the last record for next cursor
     last_record = @resources.last
     next_cursor = last_record ? encode_cursor(last_record, cursor_params[:order_by]) : nil
 
+    # Get the data with standard associations
+    include_options = prepare_include_options(includes)
+    customer_data = @resources.as_json(include: include_options)
+
+    # Manually handle operation_rooms if requested
+    customer_data = add_operation_rooms_to_customers(customer_data, @resources) if has_operation_rooms
+
     render json: {
-      data: @resources.as_json(include: params[:include]&.split(",")),
-      pagination: {
-        per_page: pagination[:per_page],
-        total_count: total_count,
-        next_cursor: next_cursor
+      data: customer_data,
+      meta: {
+        pagination: {
+          per_page: cursor_params[:limit],
+          total_count: total_count,
+          next_cursor: next_cursor
+        }
       }
     }
   end
 
-  # GET /api/v1/customers/1
+  # GET /api/v1/customers/:id
   def show
-    render json: { data: @customer }
+    # Process include parameters
+    includes = process_include_params
+    has_operation_rooms = includes.delete(:operation_rooms)
+
+    # Get the data with standard associations
+    include_options = prepare_include_options(includes)
+    customer_data = @customer.as_json(include: include_options)
+
+    # Manually handle operation_rooms if requested
+    customer_data = add_operation_rooms_to_customer(customer_data, @customer) if has_operation_rooms
+
+    render json: { data: customer_data }
   end
 
   # GET /api/v1/customers/by-user-id/:user_id
   def by_user_id
-    @customer = Customer.find_by!(user_id: params[:user_id])
-    render json: { data: @customer }
+    # Add logging to debug the user_id parameter
+    Rails.logger.info "Looking up customer with user_id: #{params[:user_id]}"
+
+    # Try to find the customer
+    @customer = Customer.find_by(user_id: params[:user_id])
+
+    if @customer.nil?
+      render json: {
+        error: {
+          code: "not_found",
+          message: "Customer with user_id '#{params[:user_id]}' not found"
+        }
+      }, status: :not_found
+      return
+    end
+
+    # Process include parameters
+    includes = process_include_params
+    has_operation_rooms = includes.delete(:operation_rooms)
+
+    # Get the data with standard associations
+    include_options = prepare_include_options(includes)
+    customer_data = @customer.as_json(include: include_options)
+
+    # Manually handle operation_rooms if requested
+    customer_data = add_operation_rooms_to_customer(customer_data, @customer) if has_operation_rooms
+
+    render json: { data: customer_data }
   end
 
   # GET /api/v1/customers/by-email/:email
   def by_email
-    @customer = Customer.find_by!(email: params[:email])
-    render json: { data: @customer }
-  end
+    # The email parameter may come in URL-encoded form
+    email = params[:email]
 
-  # GET /api/v1/customers/restful
-  def index_restful
-    # Get pagination and include params
-    pagination = pagination_params
-    includes = include_params
+    # Add logging to debug the email parameter
+    Rails.logger.info "Looking up customer with email (raw): #{email}"
 
-    # Build base query with scopes and sorting
-    base_query = apply_scopes(Customer)
+    # Try to find the customer with exact match first
+    @customer = Customer.find_by(email: email)
 
-    if pagination[:sort_by].present?
-      base_query = base_query.order(pagination[:sort_by] => pagination[:sort_order])
+    # If not found, try with case-insensitive search
+    if @customer.nil?
+      @customer = Customer.where("lower(email) = ?", email.downcase).first
     end
 
-    # Apply Pagy pagination
-    @pagy, @customers = pagy(base_query, items: 20)
-
-    # Process includes
-    result = @customers.map do |customer|
-      customer_data = customer.as_json
-
-      if includes.include?("adminRooms")
-        customer_data["admin_rooms"] = customer.customer_admin_rooms.as_json
-      end
-
-      if includes.include?("roomUsers")
-        customer_data["room_users"] = RoomUser.where(user_id: customer.user_id).as_json
-      end
-
-      customer_data
+    # If still not found, return a 404
+    if @customer.nil?
+      render json: {
+        error: {
+          code: "not_found",
+          message: "Customer with email '#{email}' not found"
+        }
+      }, status: :not_found
+      return
     end
 
-    # Render response with Pagy metadata
-    render json: {
-      data: result,
-      pagy: {
-        page: @pagy.page,
-        items: @pagy.items,
-        pages: @pagy.pages,
-        count: @pagy.count
-      }
-    }
-  end
+    # Process include parameters
+    includes = process_include_params
+    has_operation_rooms = includes.delete(:operation_rooms)
 
-  # GET /api/v1/customers/restful/:id
-  def show_restful
-    includes = include_params
-    customer_data = @customer.as_json
+    # Get the data with standard associations
+    include_options = prepare_include_options(includes)
+    customer_data = @customer.as_json(include: include_options)
 
-    if includes.include?("adminRooms")
-      customer_data["admin_rooms"] = @customer.customer_admin_rooms.as_json
-    end
-
-    if includes.include?("roomUsers")
-      customer_data["room_users"] = RoomUser.where(user_id: @customer.user_id).as_json
-    end
+    # Manually handle operation_rooms if requested
+    customer_data = add_operation_rooms_to_customer(customer_data, @customer) if has_operation_rooms
 
     render json: { data: customer_data }
   end
@@ -125,35 +152,66 @@ class Api::V1::CustomersController < ApplicationController
     if @customer.save
       render json: { data: @customer }, status: :created
     else
-      render json: { errors: @customer.errors }, status: :unprocessable_entity
+      render json: {
+        errors: format_errors(@customer.errors)
+      }, status: :unprocessable_entity
     end
   end
 
-  # PATCH/PUT /api/v1/customers/1
+  # PATCH/PUT /api/v1/customers/:id
   def update
     if @customer.update(customer_params)
       render json: { data: @customer }
     else
-      render json: { errors: @customer.errors }, status: :unprocessable_entity
+      render json: {
+        errors: format_errors(@customer.errors)
+      }, status: :unprocessable_entity
     end
   end
 
-  # DELETE /api/v1/customers/1
+  # DELETE /api/v1/customers/:id
   def destroy
     @customer.destroy!
-    render json: { message: "Customer successfully deleted" }, status: :ok
+    head :no_content
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_customer
-      @customer = Customer.find(params[:id])
-    rescue ActiveRecord::RecordNotFound
-      render json: { error: "Customer not found" }, status: :not_found
-    end
 
-    # Only allow a list of trusted parameters through.
-    def customer_params
-      params.require(:customer).permit(:user_id, :name, :email, :phone_number, :password, :last_login_at)
+  # Use callbacks to share common setup or constraints between actions.
+  def set_customer
+    @customer = Customer.find(params[:id])
+  rescue ActiveRecord::RecordNotFound
+    render json: {
+      error: {
+        code: "not_found",
+        message: "Customer not found"
+      }
+    }, status: :not_found
+  end
+
+  # Only allow a list of trusted parameters through.
+  def customer_params
+    params.require(:customer).permit(:user_id, :name, :email, :phone_number, :password, :last_login_at)
+  end
+
+  # Format ActiveRecord errors in a consistent way
+  def format_errors(errors)
+    errors.map do |error|
+      {
+        field: error.attribute,
+        message: error.message,
+        code: error_code_for(error.attribute)
+      }
     end
+  end
+
+  # Map error attributes to error codes
+  def error_code_for(attribute)
+    {
+      user_id: "invalid_user_id",
+      name: "invalid_name",
+      email: "invalid_email",
+      phone_number: "invalid_phone_number"
+    }[attribute.to_sym] || "validation_error"
+  end
 end
