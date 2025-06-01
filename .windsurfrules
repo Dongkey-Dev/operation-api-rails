@@ -9,3 +9,61 @@
 9. Security Considerations - Best practices for secure API development
 10. Documentation Standards - Guidelines for maintaining comprehensive documentation
 11. Sequential Thinking Requirement - Detailed approach for applying sequential thinking to all development tasks
+12. Code Style and Formatting - Consistent code style and formatting standards
+13. Code Organization and Structure - Clear organization and structure of code files and directories
+14. If you have worked on something like a code design level pattern, update the documentation in docs folder.
+15. After implementing a feature, when testing with curl, since running the server with rails s -b 0.0.0.0 -p 3001 always enables hot reload, please check if the server is running on port 3001. If it’s not running, start it and then run the curl test.
+16. IncludableResources Pattern - A reusable concern for handling API resource includes with limits
+
+## IncludableResources Pattern
+
+### Overview
+The IncludableResources concern provides a standardized way to handle API resource includes with configurable limits. It enables controllers to:
+- Parse and validate include parameters from API requests
+- Apply eager loading of associations
+- Limit the number of associated records returned
+- Integrate with Pagy for pagination
+- Provide consistent response formats
+
+### Key Features
+- **Configurable Includes**: Define allowed includes per controller
+- **Default Limits**: Set default limits for each association
+- **Parameter-Based Limits**: Override default limits via request parameters
+- **Pagination Integration**: Seamlessly works with Pagy pagination
+- **Error Handling**: Gracefully handles invalid includes and pagination errors
+
+### Implementation Details
+- Located at: `app/controllers/concerns/includable_resources.rb`
+- Controller configuration via DSL: `configure_includes do |config|`
+- Supports both collection endpoints (`with_includes_and_pagination`) and single record endpoints (`with_includes_for_record`)
+- Post-load association limiting to work around Rails 8 limitations
+
+### Usage Example
+```ruby
+class SomeController < ApiController
+  include IncludableResources
+  
+  configure_includes do |config|
+    config.allowed_includes = %w[users comments tags]
+    config.default_limits = {
+      users: 10,
+      comments: 5,
+      tags: 20
+    }
+  end
+  
+  def index
+    base_query = apply_scopes(SomeModel)
+    @pagy, @records = with_includes_and_pagination(base_query)
+    render json: { 
+      data: @records, 
+      meta: { pagination: pagy_metadata(@pagy) } 
+    }
+  end
+  
+  def show
+    @record = SomeModel.find(params[:id])
+    with_includes_for_record(@record)
+    render json: @record
+  end
+end

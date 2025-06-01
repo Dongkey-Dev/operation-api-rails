@@ -235,7 +235,7 @@ Content-Type: application/json
 ###############################################
 
 ### Get all operation rooms
-GET http://{{baseUrl}}/operation_rooms
+GET http://{{baseUrl}}/operation_rooms?include=room_users
 Authorization: Bearer 74b6400cf3f496e98dec39e921e1bfbb
 ### Get all operation rooms
 GET http://{{baseUrl}}/operation_rooms?limit=100

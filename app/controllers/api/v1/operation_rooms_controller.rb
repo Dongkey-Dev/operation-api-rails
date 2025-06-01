@@ -1,8 +1,15 @@
 class Api::V1::OperationRoomsController < Api::ApiController
   include Pagy::Backend
+  include IncludableResources
 
   before_action :authenticate_user
   before_action :set_operation_room, only: %i[ show update destroy ]
+
+  # Configure allowed includes and their default limits
+  configure_includes do |config|
+    config.allowed_includes = %w[room_users customer_admin_room customer_admin_user features plans]
+    config.default_limits = { room_users: 10 }
+  end
 
   # Define scopes that can be used for filtering
   has_scope :by_platform
@@ -30,51 +37,33 @@ class Api::V1::OperationRoomsController < Api::ApiController
       base_query = base_query.order(created_at: :desc)
     end
 
-    # Apply Pagy pagination
+    # Apply pagination and includes with limits
     items_per_page = params[:limit].present? ? params[:limit].to_i : 15
     page_number = params[:page].present? ? params[:page].to_i : 1
-
-    begin
-      @pagy, @operation_rooms = pagy(base_query, items: items_per_page, page: page_number)
-
-      # Determine if there's a next page
-      has_next_page = @pagy.page < @pagy.pages
-      next_page = has_next_page ? @pagy.page + 1 : nil
-
-      # Render response with pagination metadata following our API standards
-      render json: {
-        data: @operation_rooms,
-        meta: {
-          pagination: {
-            per_page: items_per_page,
-            current_page: @pagy.page,
-            total_pages: @pagy.pages,
-            total_count: @pagy.count,
-            next_page: next_page
-          }
-        }
+    
+    result = with_includes_and_pagination(
+      base_query, 
+      items_per_page: items_per_page, 
+      page_number: page_number
+    )
+    
+    # Render response with pagination metadata following our API standards
+    render json: {
+      data: result[:records].as_json(include: result[:include_options]),
+      meta: {
+        pagination: result[:pagination]
       }
-    rescue Pagy::OverflowError
-      # Handle the case where page is out of bounds
-      render json: {
-        data: [],
-        meta: {
-          pagination: {
-            per_page: items_per_page,
-            current_page: page_number,
-            total_pages: 0,
-            total_count: 0,
-            next_page: nil
-          }
-        }
-      }
-    end
+    }
   end
 
   # GET /api/v1/operation_rooms/1
   def show
     authorize @operation_room
-    render json: @operation_room
+    
+    # Apply includes with limits
+    result = with_includes_for_record(@operation_room)
+    
+    render json: result[:record].as_json(include: result[:include_options])
   end
 
   # POST /api/v1/operation_rooms
@@ -92,7 +81,7 @@ class Api::V1::OperationRoomsController < Api::ApiController
   # PATCH/PUT /api/v1/operation_rooms/1
   def update
     authorize @operation_room
-    
+
     if @operation_room.update(operation_room_params)
       render json: @operation_room
     else
@@ -112,9 +101,9 @@ class Api::V1::OperationRoomsController < Api::ApiController
     def authenticate_user
       # For now, we'll use a simple token-based authentication
       # In a real application, you would use JWT or another authentication method
-      token = request.headers['Authorization']&.split(' ')&.last
+      token = request.headers["Authorization"]&.split(" ")&.last
       @current_user = Customer.find_by(token: token)
-      
+
       unless @current_user
         render json: {
           error: {
@@ -124,7 +113,7 @@ class Api::V1::OperationRoomsController < Api::ApiController
         }, status: :unauthorized
       end
     end
-  
+
     # Use callbacks to share common setup or constraints between actions.
     def set_operation_room
       @operation_room = OperationRoom.find(params[:id])
@@ -145,7 +134,7 @@ class Api::V1::OperationRoomsController < Api::ApiController
         :dueDate, :createdAt, :updatedAt
       )
     end
-    
+
     # Override Pundit's current_user method to use our @current_user
     def pundit_user
       @current_user
