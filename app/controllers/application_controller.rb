@@ -5,6 +5,8 @@ class ApplicationController < ActionController::API
   include Pagy::Backend
   # Add RailsParam for parameter validation
   include RailsParam
+  # Add Pundit for authorization
+  include Pundit::Authorization
 
   # Configure Pagy
   Pagy::DEFAULT.merge!(
@@ -29,6 +31,7 @@ class ApplicationController < ActionController::API
   rescue_from ActionController::ParameterMissing, with: :render_400
   rescue_from ActiveRecord::RecordInvalid, with: :render_422
   rescue_from Pagy::OverflowError, with: :render_400
+  rescue_from Pundit::NotAuthorizedError, with: :render_403
 
   private
 
@@ -60,6 +63,10 @@ class ApplicationController < ActionController::API
 
   def render_422(error)
     render_error(error, :unprocessable_entity)
+  end
+
+  def render_403(error)
+    render_error(error, :forbidden)
   end
 
   def render_500(error)

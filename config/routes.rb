@@ -15,12 +15,7 @@ Rails.application.routes.draw do
       resources :plans
       resources :operation_rooms
       resources :customer_admin_rooms
-      resources :customers do
-        collection do
-          get 'by-user-id/:user_id', to: 'customers#by_user_id'
-          get 'by-email/:email', to: 'customers#by_email', constraints: { email: /.+/ }
-        end
-      end
+      resources :customers
     end
   end
 

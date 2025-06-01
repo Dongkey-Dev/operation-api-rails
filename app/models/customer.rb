@@ -6,6 +6,28 @@ class Customer < ApplicationRecord
   has_many :room_users, foreign_key: "user_id", primary_key: "user_id", dependent: :destroy
   has_many :member_operation_rooms, through: :room_users, source: :operation_room
   
+  # Callbacks
+  before_create :generate_token
+  
+  # Authorization methods
+  def admin?
+    is_admin
+  end
+  
+  # Token management
+  def generate_token
+    self.token = loop do
+      random_token = SecureRandom.urlsafe_base64(32)
+      break random_token unless Customer.exists?(token: random_token)
+    end
+  end
+  
+  def regenerate_token!
+    generate_token
+    save!
+    token
+  end
+
   # We can't use a direct has_many association for operation_rooms because we need to combine two different
   # sources of rooms. Instead, we'll modify the CustomersController to handle this special case.
 

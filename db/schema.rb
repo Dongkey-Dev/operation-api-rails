@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 0) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_31_125208) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -68,7 +68,8 @@ ActiveRecord::Schema[8.0].define(version: 0) do
     t.datetime "created_at", precision: nil, default: -> { "now()" }
     t.datetime "updated_at", precision: nil, default: -> { "now()" }
     t.text "token"
-
+    t.boolean "is_admin", default: false, null: false
+    t.index ["token"], name: "index_customers_on_token", unique: true
     t.unique_constraint ["user_id"], name: "customers_user_id_unique"
   end
 

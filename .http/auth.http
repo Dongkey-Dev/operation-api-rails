@@ -1,0 +1,73 @@
+@baseUrl = localhost:3001/api/v1
+
+###############################################
+# Authentication API
+###############################################
+
+### Login to get authentication token
+POST http://{{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@example.com",
+  "password": "admin123"
+}
+
+### Get current user information (Admin)
+GET http://{{baseUrl}}/auth/me
+Authorization: Bearer admin-test-token-12345
+
+### Logout (invalidate token)
+POST http://{{baseUrl}}/auth/logout
+Authorization: Bearer admin-test-token-12345
+
+###############################################
+# Protected API Endpoints Examples
+###############################################
+
+### List Customers (with Admin Authentication)
+GET http://{{baseUrl}}/customers
+Authorization: Bearer admin-test-token-12345
+
+### List Customers (with Regular User Authentication)
+GET http://{{baseUrl}}/customers
+Authorization: Bearer user-test-token-67890
+
+### Get Customer by ID (with Admin Authentication)
+GET http://{{baseUrl}}/customers/12
+Authorization: Bearer admin-test-token-12345
+
+### Get Customer by ID (with Regular User Authentication)
+GET http://{{baseUrl}}/customers/13
+Authorization: Bearer user-test-token-67890
+
+### Create Customer (Admin Only)
+POST http://{{baseUrl}}/customers
+Content-Type: application/json
+Authorization: Bearer admin-test-token-12345
+
+{
+  "customer": {
+    "name": "New Customer",
+    "email": "new@example.com",
+    "password": "securepassword",
+    "user_id": 12345678,
+    "is_admin": false
+  }
+}
+
+### Update Customer (Admin)
+PUT http://{{baseUrl}}/customers/13
+Content-Type: application/json
+Authorization: Bearer admin-test-token-12345
+
+{
+  "customer": {
+    "name": "Updated Name",
+    "email": "updated@example.com"
+  }
+}
+
+### Delete Customer (Admin Only)
+DELETE http://{{baseUrl}}/customers/14
+Authorization: Bearer admin-test-token-12345

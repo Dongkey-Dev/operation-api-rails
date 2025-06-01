@@ -57,4 +57,7 @@ gem "has_scope"
 # A pagination gem for Ruby
 gem "pagy"
 
+# Minimal authorization through OO design and pure Ruby classes
+gem "pundit"
+
 gem "rails_param", "~> 1.3"

@@ -1,8 +1,9 @@
-class Api::V1::CustomersController < ApplicationController
+class Api::V1::CustomersController < Api::ApiController
   include CursorPagination
   include OperationRoomsIncludable
   include Pagy::Backend
 
+  before_action :authenticate_user
   before_action :set_customer, only: %i[show update destroy]
 
   # Define scopes that can be used for filtering
@@ -23,8 +24,8 @@ class Api::V1::CustomersController < ApplicationController
     includes = process_include_params
     has_operation_rooms = includes.delete(:operation_rooms)
 
-    # Build base query with scopes
-    @resources = apply_scopes(Customer).order(id: :desc)
+    # Build base query with scopes and authorize with policy_scope
+    @resources = policy_scope(apply_scopes(Customer)).order(id: :desc)
 
     # Apply eager loading for included associations
     @resources = @resources.includes(includes) if includes.any?
@@ -58,6 +59,9 @@ class Api::V1::CustomersController < ApplicationController
 
   # GET /api/v1/customers/:id
   def show
+    # Authorize the customer
+    authorize @customer
+
     # Process include parameters
     includes = process_include_params
     has_operation_rooms = includes.delete(:operation_rooms)
@@ -89,6 +93,9 @@ class Api::V1::CustomersController < ApplicationController
       }, status: :not_found
       return
     end
+    
+    # Authorize the customer for the by_user_id action
+    authorize @customer, :by_user_id?
 
     # Process include parameters
     includes = process_include_params
@@ -130,6 +137,9 @@ class Api::V1::CustomersController < ApplicationController
       }, status: :not_found
       return
     end
+    
+    # Authorize the customer for the by_email action
+    authorize @customer, :by_email?
 
     # Process include parameters
     includes = process_include_params
@@ -148,6 +158,9 @@ class Api::V1::CustomersController < ApplicationController
   # POST /api/v1/customers
   def create
     @customer = Customer.new(customer_params)
+    
+    # Authorize the customer creation
+    authorize @customer
 
     if @customer.save
       render json: { data: @customer }, status: :created
@@ -160,6 +173,9 @@ class Api::V1::CustomersController < ApplicationController
 
   # PATCH/PUT /api/v1/customers/:id
   def update
+    # Authorize the customer update
+    authorize @customer
+    
     if @customer.update(customer_params)
       render json: { data: @customer }
     else
@@ -171,11 +187,31 @@ class Api::V1::CustomersController < ApplicationController
 
   # DELETE /api/v1/customers/:id
   def destroy
+    # Authorize the customer deletion
+    authorize @customer
+    
     @customer.destroy!
     head :no_content
   end
 
   private
+  
+  # Authenticate user from token
+  def authenticate_user
+    # For now, we'll use a simple token-based authentication
+    # In a real application, you would use JWT or another authentication method
+    token = request.headers['Authorization']&.split(' ')&.last
+    @current_user = Customer.find_by(token: token)
+    
+    unless @current_user
+      render json: {
+        error: {
+          code: "unauthorized",
+          message: "You need to sign in or sign up before continuing."
+        }
+      }, status: :unauthorized
+    end
+  end
 
   # Use callbacks to share common setup or constraints between actions.
   def set_customer
@@ -213,5 +249,10 @@ class Api::V1::CustomersController < ApplicationController
       email: "invalid_email",
       phone_number: "invalid_phone_number"
     }[attribute.to_sym] || "validation_error"
+  end
+  
+  # Override Pundit's current_user method to use our @current_user
+  def pundit_user
+    @current_user
   end
 end

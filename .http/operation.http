@@ -6,70 +6,90 @@
 
 ### List Customers (Basic)
 GET http://{{baseUrl}}/customers
+Authorization: Bearer eemKIvokZMQPMcCdxjsXvcic9bapBF6EhHVHoU_uVN8
 
 ### List Customers (with Cursor Pagination)
 # cursor should be a timestamp in ISO8601 format
 GET http://{{baseUrl}}/customers?limit=5&order_by=created_at&cursor=eyJ2YWx1ZSI6IjIwMjUtMDUtMjJUMTU6MzM6NDMuMzY3MDAwWiIsImlkIjo0fQ==
+Authorization: Bearer eemKIvokZMQPMcCdxjsXvcic9bapBF6EhHVHoU_uVN8
 
 ###
 # Sort by created_at descending
 GET http://{{baseUrl}}/customers?order_by=created_at&order_direction=DESC
+Authorization: Bearer eemKIvokZMQPMcCdxjsXvcic9bapBF6EhHVHoU_uVN8
 
 ### List Customers (with Filtering)
 # Filter by user_id
 GET http://{{baseUrl}}/customers?user_id=38554683
+Authorization: Bearer eemKIvokZMQPMcCdxjsXvcic9bapBF6EhHVHoU_uVN8
 ###
 # Filter by name
 GET http://{{baseUrl}}/customers?name=test
+Authorization: Bearer eemKIvokZMQPMcCdxjsXvcic9bapBF6EhHVHoU_uVN8
 ### 
 
 # Filter by email
 GET http://{{baseUrl}}/customers?email=test@example.com
+Authorization: Bearer eemKIvokZMQPMcCdxjsXvcic9bapBF6EhHVHoU_uVN8
 
 ###
 # Filter by recent login (days)
 GET http://{{baseUrl}}/customers?recent_days=7
+Authorization: Bearer eemKIvokZMQPMcCdxjsXvcic9bapBF6EhHVHoU_uVN8
 
 ### List Customers (with Multiple Filters)
 GET http://{{baseUrl}}/customers?user_id=38554683&name=test&limit=5
+Authorization: Bearer eemKIvokZMQPMcCdxjsXvcic9bapBF6EhHVHoU_uVN8
 
 ### List Customers (with Includes)
 # Include commands associated with customers
 GET http://{{baseUrl}}/customers?include=commands
+Authorization: Bearer eemKIvokZMQPMcCdxjsXvcic9bapBF6EhHVHoU_uVN8
 
 ### Include customer_admin_rooms
 GET http://{{baseUrl}}/customers?include=customer_admin_rooms
+Authorization: Bearer eemKIvokZMQPMcCdxjsXvcic9bapBF6EhHVHoU_uVN8
 
 ### Include admin_rooms (operation rooms where customer is admin)
 GET http://{{baseUrl}}/customers?include=customer_admin_rooms
+Authorization: Bearer eemKIvokZMQPMcCdxjsXvcic9bapBF6EhHVHoU_uVN8
 
 ### Include room_users (all room user records for the customer)
 GET http://{{baseUrl}}/customers?include=room_users
+Authorization: Bearer eemKIvokZMQPMcCdxjsXvcic9bapBF6EhHVHoU_uVN8
 
 ### Include operation_rooms (all operation rooms the customer is part of)
 GET http://{{baseUrl}}/customers?include=operation_rooms,customer_admin_rooms
+Authorization: Bearer eemKIvokZMQPMcCdxjsXvcic9bapBF6EhHVHoU_uVN8
 
 ### Include operation_rooms (now includes both member rooms and admin rooms)
 # This will include operation rooms where the customer is a member through room_users
 # AND operation rooms where customer_admin_user_id = customer.id
 GET http://{{baseUrl}}/customers?include=operation_rooms
+Authorization: Bearer eemKIvokZMQPMcCdxjsXvcic9bapBF6EhHVHoU_uVN8
 
 ### Include multiple relations
 GET http://{{baseUrl}}/customers?include=room_users,operation_rooms,customer_admin_rooms
+Authorization: Bearer eemKIvokZMQPMcCdxjsXvcic9bapBF6EhHVHoU_uVN8
 
 ### Get Single Customer
 # By ID
 GET http://{{baseUrl}}/customers/1
+Authorization: Bearer eemKIvokZMQPMcCdxjsXvcic9bapBF6EhHVHoU_uVN8
 
+###
 # By User ID
 GET http://{{baseUrl}}/customers/by-user-id/38554683
+Authorization: Bearer eemKIvokZMQPMcCdxjsXvcic9bapBF6EhHVHoU_uVN8
 
 # By Email
 GET http://{{baseUrl}}/customers/by-email/test@example.com
+Authorization: Bearer eemKIvokZMQPMcCdxjsXvcic9bapBF6EhHVHoU_uVN8
 
 ### Create Customer
 POST http://{{baseUrl}}/customers
 Content-Type: application/json
+Authorization: Bearer eemKIvokZMQPMcCdxjsXvcic9bapBF6EhHVHoU_uVN8
 
 {
   "user_id": 123456,
@@ -81,6 +101,7 @@ Content-Type: application/json
 ### Update Customer
 PATCH http://{{baseUrl}}/customers/1
 Content-Type: application/json
+Authorization: Bearer eemKIvokZMQPMcCdxjsXvcic9bapBF6EhHVHoU_uVN8
 
 {
   "name": "Updated Name",
@@ -89,10 +110,12 @@ Content-Type: application/json
 
 ### Delete Customer
 DELETE http://{{baseUrl}}/customers/1
+Authorization: Bearer eemKIvokZMQPMcCdxjsXvcic9bapBF6EhHVHoU_uVN8
 
 ### Create a new customer
 POST http://{{baseUrl}}/customers
 Content-Type: application/json
+Authorization: Bearer eemKIvokZMQPMcCdxjsXvcic9bapBF6EhHVHoU_uVN8
 
 {
   "userId": 1,
@@ -105,6 +128,7 @@ Content-Type: application/json
 ### Update a customer
 PUT http://{{baseUrl}}/customers/1
 Content-Type: application/json
+Authorization: Bearer eemKIvokZMQPMcCdxjsXvcic9bapBF6EhHVHoU_uVN8
 
 {
   "name": "Updated Customer Name",
@@ -114,10 +138,12 @@ Content-Type: application/json
 
 ### Delete a customer
 DELETE http://{{baseUrl}}/customers/1
+Authorization: Bearer eemKIvokZMQPMcCdxjsXvcic9bapBF6EhHVHoU_uVN8
 
 ### Login a customer
 POST http://{{baseUrl}}/customers/login
 Content-Type: application/json
+Authorization: Bearer eemKIvokZMQPMcCdxjsXvcic9bapBF6EhHVHoU_uVN8
 
 {
   "email": "test@example.com",
@@ -127,6 +153,7 @@ Content-Type: application/json
 ### Create multiple customers in batch
 POST http://{{baseUrl}}/customers/batch
 Content-Type: application/json
+Authorization: Bearer eemKIvokZMQPMcCdxjsXvcic9bapBF6EhHVHoU_uVN8
 
 {
   "records": [
@@ -207,6 +234,9 @@ Content-Type: application/json
 # Operation Rooms API
 ###############################################
 
+### Get all operation rooms
+GET http://{{baseUrl}}/operation_rooms
+Authorization: Bearer 74b6400cf3f496e98dec39e921e1bfbb
 ### Get all operation rooms
 GET http://{{baseUrl}}/operation_rooms?limit=100
 
