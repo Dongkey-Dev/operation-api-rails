@@ -41,15 +41,13 @@ class Api::V1::CommandResponsesController < Api::ApiController
     base_query = base_query.order(params[:sort_by] => params[:sort_order])
 
     # Apply pagination and includes
-    result = with_includes_and_pagination(base_query,
-                                         items_per_page: params[:limit],
-                                         page_number: params[:page])
+    @pagy, @command_responses = with_includes_and_pagination(base_query)
 
     # Render response with pagination metadata
     render json: {
-      data: result[:records],
+      data: @command_responses,
       meta: {
-        pagination: result[:pagination]
+        pagination: pagy_metadata(@pagy)
       }
     }
   end
@@ -72,15 +70,13 @@ class Api::V1::CommandResponsesController < Api::ApiController
     base_query = base_query.order(params[:sort_by] => params[:sort_order])
 
     # Apply pagination and includes
-    result = with_includes_and_pagination(base_query,
-                                         items_per_page: params[:limit],
-                                         page_number: params[:page])
+    @pagy, @command_responses = with_includes_and_pagination(base_query)
 
     # Render response with pagination metadata
     render json: {
-      data: result[:records],
+      data: @command_responses,
       meta: {
-        pagination: result[:pagination]
+        pagination: pagy_metadata(@pagy)
       }
     }
   end
@@ -111,15 +107,13 @@ class Api::V1::CommandResponsesController < Api::ApiController
     base_query = base_query.order(params[:sort_by] => params[:sort_order])
 
     # Apply pagination and includes
-    result = with_includes_and_pagination(base_query,
-                                         items_per_page: params[:limit],
-                                         page_number: params[:page])
+    @pagy, @command_responses = with_includes_and_pagination(base_query)
 
     # Render response with pagination metadata
     render json: {
-      data: result[:records],
+      data: @command_responses,
       meta: {
-        pagination: result[:pagination]
+        pagination: pagy_metadata(@pagy)
       }
     }
   end
@@ -146,15 +140,13 @@ class Api::V1::CommandResponsesController < Api::ApiController
     base_query = base_query.order(params[:sort_by] => params[:sort_order])
 
     # Apply pagination and includes
-    result = with_includes_and_pagination(base_query,
-                                         items_per_page: params[:limit],
-                                         page_number: params[:page])
+    @pagy, @command_responses = with_includes_and_pagination(base_query)
 
     # Render response with pagination metadata
     render json: {
-      data: result[:records],
+      data: @command_responses,
       meta: {
-        pagination: result[:pagination]
+        pagination: pagy_metadata(@pagy)
       }
     }
   end
@@ -254,9 +246,7 @@ class Api::V1::CommandResponsesController < Api::ApiController
     
     # Format error messages
     def format_errors(errors)
-      errors.map do |error|
-        attribute = error.attribute
-        message = error.message
+      errors.map do |attribute, message|
         {
           code: error_code_for(attribute),
           detail: message,
@@ -272,8 +262,7 @@ class Api::V1::CommandResponsesController < Api::ApiController
         content: "invalid_content",
         response_type: "invalid_response_type",
         priority: "invalid_priority",
-        is_active: "invalid_active_status",
-        base: "validation_error"
+        is_active: "invalid_active_status"
       }[attribute.to_sym] || "validation_error"
     end
     
