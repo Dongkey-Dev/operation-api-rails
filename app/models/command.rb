@@ -1,4 +1,6 @@
 class Command < ApplicationRecord
+  include TokenScopable
+  
   # Associations
   belongs_to :customer, optional: true
   belongs_to :operation_room, optional: true

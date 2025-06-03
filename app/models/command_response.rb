@@ -1,4 +1,6 @@
 class CommandResponse < ApplicationRecord
+  include TokenScopable
+  
   # Associations
   belongs_to :command
 

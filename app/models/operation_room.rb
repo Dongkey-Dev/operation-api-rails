@@ -1,4 +1,5 @@
 class OperationRoom < ApplicationRecord
+  include TokenScopable
   # Associations
   belongs_to :customer_admin_room, optional: true
   belongs_to :customer_admin_user, class_name: "Customer", optional: true

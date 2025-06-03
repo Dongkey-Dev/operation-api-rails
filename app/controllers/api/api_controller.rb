@@ -4,6 +4,7 @@ module Api
   class ApiController < ApplicationController
     include Authentication
     include Pundit::Authorization
+    include TokenCustomerFiltering
 
     # Rescue from Pundit authorization errors
     rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized

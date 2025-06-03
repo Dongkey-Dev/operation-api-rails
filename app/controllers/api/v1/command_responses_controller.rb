@@ -3,7 +3,10 @@ class Api::V1::CommandResponsesController < Api::ApiController
   include IncludableResources
 
   before_action :authenticate_user
-  before_action :set_command_response, only: %i[show update destroy toggle_active]
+  before_action :set_command_response, only: %i[show update destroy]
+  
+  # Configure token-based customer filtering for CommandResponse
+  filter_by_token_customer CommandResponse
 
   # Define scopes that can be used for filtering
   has_scope :active, type: :boolean
@@ -25,6 +28,7 @@ class Api::V1::CommandResponsesController < Api::ApiController
   def index
     # Validate and transform parameters
     param! :active, :boolean
+    param! :is_active, :boolean
     param! :command_id, Integer, transform: :presence
     param! :response_type, String, transform: :presence
     param! :priority, Integer, transform: :presence
@@ -35,7 +39,14 @@ class Api::V1::CommandResponsesController < Api::ApiController
     param! :sort_order, String, in: %w[asc desc], default: 'desc'
 
     # Apply scopes with policy_scope for authorization
+    # Token-based customer filtering is automatically applied by the TokenCustomerFiltering concern
     base_query = policy_scope(apply_scopes(CommandResponse))
+
+    # Apply active filter if specified (for backward compatibility)
+    base_query = base_query.active if params[:active].present?
+    
+    # Apply is_active filter if specified
+    base_query = base_query.where(is_active: params[:is_active]) if params[:is_active].present?
 
     # Apply sorting
     base_query = base_query.order(params[:sort_by] => params[:sort_order])
@@ -55,108 +66,26 @@ class Api::V1::CommandResponsesController < Api::ApiController
   end
 
   # GET /api/v1/command_responses/active
+# This method is kept for backward compatibility
+# New requests should use GET /api/v1/command_responses?active=true
   def active
-    param! :command_id, Integer, transform: :presence
-    param! :response_type, String, transform: :presence
-    param! :priority, Integer, transform: :presence
-    param! :include, String, transform: :presence
-    param! :limit, Integer, default: 25, min: 1, max: 100
-    param! :page, Integer, default: 1, min: 1
-    param! :sort_by, String, in: %w[priority created_at updated_at], default: 'priority'
-    param! :sort_order, String, in: %w[asc desc], default: 'desc'
-
-    # Apply scopes with active filter
-    base_query = policy_scope(apply_scopes(CommandResponse.active))
-
-    # Apply sorting
-    base_query = base_query.order(params[:sort_by] => params[:sort_order])
-
-    # Apply pagination and includes
-    result = with_includes_and_pagination(base_query,
-                                         items_per_page: params[:limit],
-                                         page_number: params[:page])
-
-    # Render response with pagination metadata
-    render json: {
-      data: result[:records],
-      meta: {
-        pagination: result[:pagination]
-      }
-    }
+    redirect_to api_v1_command_responses_path(active: true, command_id: params[:command_id]), status: :moved_permanently
   end
 
   # GET /api/v1/command_responses/by_command/:id
+# This method is kept for backward compatibility
+# New requests should use GET /api/v1/command_responses?command_id=:id
   def by_command
     param! :id, Integer, required: true
-    param! :active, :boolean
-    param! :response_type, String, transform: :presence
-    param! :priority, Integer, transform: :presence
-    param! :include, String, transform: :presence
-    param! :limit, Integer, default: 25, min: 1, max: 100
-    param! :page, Integer, default: 1, min: 1
-    param! :sort_by, String, in: %w[priority created_at updated_at], default: 'priority'
-    param! :sort_order, String, in: %w[asc desc], default: 'desc'
-
-    # Find the command first to ensure it exists and user has access
-    command = Command.find(params[:id])
-    authorize command, :show?
-
-    # Apply scopes with command filter
-    base_query = policy_scope(apply_scopes(CommandResponse.by_command(params[:id])))
-    
-    # Apply active filter if specified
-    base_query = base_query.active if params[:active]
-
-    # Apply sorting
-    base_query = base_query.order(params[:sort_by] => params[:sort_order])
-
-    # Apply pagination and includes
-    result = with_includes_and_pagination(base_query,
-                                         items_per_page: params[:limit],
-                                         page_number: params[:page])
-
-    # Render response with pagination metadata
-    render json: {
-      data: result[:records],
-      meta: {
-        pagination: result[:pagination]
-      }
-    }
+    redirect_to api_v1_command_responses_path(command_id: params[:id], active: params[:active]), status: :moved_permanently
   end
 
   # GET /api/v1/command_responses/active/by_command/:id
+# This method is kept for backward compatibility
+# New requests should use GET /api/v1/command_responses?command_id=:id&active=true
   def active_by_command
     param! :id, Integer, required: true
-    param! :response_type, String, transform: :presence
-    param! :priority, Integer, transform: :presence
-    param! :include, String, transform: :presence
-    param! :limit, Integer, default: 25, min: 1, max: 100
-    param! :page, Integer, default: 1, min: 1
-    param! :sort_by, String, in: %w[priority created_at updated_at], default: 'priority'
-    param! :sort_order, String, in: %w[asc desc], default: 'desc'
-
-    # Find the command first to ensure it exists and user has access
-    command = Command.find(params[:id])
-    authorize command, :show?
-
-    # Apply scopes with command filter and active filter
-    base_query = policy_scope(apply_scopes(CommandResponse.active.by_command(params[:id])))
-
-    # Apply sorting
-    base_query = base_query.order(params[:sort_by] => params[:sort_order])
-
-    # Apply pagination and includes
-    result = with_includes_and_pagination(base_query,
-                                         items_per_page: params[:limit],
-                                         page_number: params[:page])
-
-    # Render response with pagination metadata
-    render json: {
-      data: result[:records],
-      meta: {
-        pagination: result[:pagination]
-      }
-    }
+    redirect_to api_v1_command_responses_path(command_id: params[:id], active: true), status: :moved_permanently
   end
 
   # GET /api/v1/command_responses/1
@@ -169,6 +98,21 @@ class Api::V1::CommandResponsesController < Api::ApiController
   # POST /api/v1/command_responses
   def create
     @command_response = CommandResponse.new(command_response_params)
+    
+    # Ensure the command belongs to the current customer
+    if current_customer.present? && @command_response.command_id.present?
+      command = Command.by_token_customer(current_customer).find_by(id: @command_response.command_id)
+      
+      if command.nil?
+        return render json: { 
+          errors: [{
+            code: "invalid_command",
+            detail: "The specified command does not exist or you don't have permission to access it"
+          }]
+        }, status: :unprocessable_entity
+      end
+    end
+    
     authorize @command_response
 
     if @command_response.save
@@ -182,23 +126,18 @@ class Api::V1::CommandResponsesController < Api::ApiController
   def update
     authorize @command_response
     
-    if @command_response.update(command_response_params)
-      render json: { data: @command_response }
-    else
-      render json: { errors: format_errors(@command_response.errors) }, status: :unprocessable_entity
+    # Check if this is a toggle_active request
+    if params[:command_response].key?(:toggle_active) && params[:command_response][:toggle_active].present?
+      # Toggle the active status
+      new_status = !@command_response.is_active
+      params[:command_response][:is_active] = new_status
+      toggle_message = "Command response is now #{new_status ? 'active' : 'inactive'}"
     end
-  end
-
-  # PUT /api/v1/command_responses/1/toggle_active
-  def toggle_active
-    authorize @command_response
     
-    new_status = !@command_response.is_active
-    if @command_response.update(is_active: new_status)
-      render json: { 
-        data: @command_response,
-        message: "Command response is now #{new_status ? 'active' : 'inactive'}"
-      }
+    if @command_response.update(command_response_params)
+      response = { data: @command_response }
+      response[:message] = toggle_message if toggle_message.present?
+      render json: response
     else
       render json: { errors: format_errors(@command_response.errors) }, status: :unprocessable_entity
     end
@@ -212,12 +151,9 @@ class Api::V1::CommandResponsesController < Api::ApiController
   end
 
   private
-    # Authenticate user from token
+    # Authenticate user from token - using Authentication module
     def authenticate_user
-      # For now, we'll use a simple token-based authentication
-      # In a real application, you would use JWT or another authentication method
-      token = request.headers['Authorization']&.split(' ')&.last
-      @current_user = Customer.find_by(token: token)
+      @current_user = current_customer
       
       unless @current_user
         render json: {
@@ -248,7 +184,8 @@ class Api::V1::CommandResponsesController < Api::ApiController
         :content, 
         :response_type, 
         :priority, 
-        :is_active
+        :is_active,
+        :toggle_active
       )
     end
     

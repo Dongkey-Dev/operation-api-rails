@@ -37,9 +37,9 @@ module IncludableResources
   def parse_includes
     return [] unless params[:include].present?
 
-    includes = params[:include].to_s.split(',').map(&:strip).select(&:present?)
+    includes = params[:include].to_s.split(",").map(&:strip).select(&:present?)
     allowed_includes = self.class.include_configuration.allowed_includes
-    
+
     includes.select { |inc| allowed_includes.include?(inc) }
   end
 
@@ -47,7 +47,7 @@ module IncludableResources
   def apply_includes(query)
     valid_includes = parse_includes
     query = query.includes(*valid_includes) if valid_includes.any?
-    [query, valid_includes]
+    [ query, valid_includes ]
   end
 
   # Apply limits to included associations
@@ -69,24 +69,24 @@ module IncludableResources
       # For a single record
       apply_limits_to_record(records, valid_includes)
     end
-    
+
     # Return the original records (single record or collection)
     records
   end
-  
+
   # Helper method to apply limits to a single record
   def apply_limits_to_record(record, valid_includes)
     return unless record.respond_to?(:association)
-    
+
     valid_includes.each do |inc|
       association_name = inc.to_sym
-      
+
       # Check if association is loaded and apply limit if needed
       if record.association(association_name).loaded?
         # Get limit for this association (from params or default)
         limit_param_name = "#{inc}_limit"
         limit = params[limit_param_name].present? ? params[limit_param_name].to_i : default_limit_for(inc)
-        
+
         # Apply limit if one is set
         if limit.present? && limit > 0
           # Get the current association records and limit them
@@ -96,7 +96,7 @@ module IncludableResources
       end
     end
   end
-  
+
   # Get the default limit for an association
   def default_limit_for(association_name)
     limits = self.class.include_configuration.default_limits
@@ -106,12 +106,12 @@ module IncludableResources
   # Prepare include options for as_json
   def prepare_include_options(valid_includes)
     return nil unless valid_includes.any?
-    
+
     include_options = {}
     valid_includes.each do |inc|
       include_options[inc.to_sym] = {}
     end
-    
+
     include_options
   end
 
@@ -119,21 +119,21 @@ module IncludableResources
   def with_includes_and_pagination(base_query, items_per_page: 15, page_number: 1)
     # Apply includes
     base_query, valid_includes = apply_includes(base_query)
-    
+
     # Apply pagination
     begin
       pagy, records = pagy(base_query, items: items_per_page, page: page_number)
-      
+
       # Apply limits to associations
       records = apply_association_limits(records, valid_includes)
-      
+
       # Prepare include options for rendering
       include_options = prepare_include_options(valid_includes)
-      
+
       # Determine if there's a next page
       has_next_page = pagy.page < pagy.pages
       next_page = has_next_page ? pagy.page + 1 : nil
-      
+
       # Return everything needed for rendering
       {
         records: records,
@@ -167,19 +167,19 @@ module IncludableResources
   # Apply includes to a single record
   def with_includes_for_record(record)
     valid_includes = parse_includes
-    
+
     # Reload the record with includes if needed
     if valid_includes.any?
       record_class = record.class
       record = record_class.includes(*valid_includes).find(record.id)
     end
-    
+
     # Apply limits to associations
     record = apply_association_limits(record, valid_includes)
-    
+
     # Prepare include options for rendering
     include_options = prepare_include_options(valid_includes)
-    
+
     {
       record: record,
       include_options: include_options,

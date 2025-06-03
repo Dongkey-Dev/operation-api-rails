@@ -26,6 +26,9 @@ class Api::V1::OperationRoomsController < Api::ApiController
   def index
     # Build base query with scopes and authorize with policy_scope
     base_query = policy_scope(apply_scopes(OperationRoom))
+    
+    # Apply token-based customer filtering if no specific customer_id is provided
+    base_query = base_query.by_token_customer(current_customer) unless params[:customer_id].present?
 
     # Apply sorting if specified
     if params[:sortBy].present?
@@ -69,6 +72,12 @@ class Api::V1::OperationRoomsController < Api::ApiController
   # POST /api/v1/operation_rooms
   def create
     @operation_room = OperationRoom.new(operation_room_params)
+    
+    # Set customer_id from token if not provided
+    if @operation_room.customer_id.blank? && current_customer.present?
+      @operation_room.customer_id = current_customer.id
+    end
+    
     authorize @operation_room
 
     if @operation_room.save
@@ -97,13 +106,10 @@ class Api::V1::OperationRoomsController < Api::ApiController
   end
 
   private
-    # Authenticate user from token
+    # Authenticate user from token - using Authentication module
     def authenticate_user
-      # For now, we'll use a simple token-based authentication
-      # In a real application, you would use JWT or another authentication method
-      token = request.headers["Authorization"]&.split(" ")&.last
-      @current_user = Customer.find_by(token: token)
-
+      @current_user = current_customer
+      
       unless @current_user
         render json: {
           error: {
@@ -131,7 +137,7 @@ class Api::V1::OperationRoomsController < Api::ApiController
       params.require(:operation_room).permit(
         :chatRoomId, :openChatLink, :originTitle, :title, :accumulatedPaymentAmount,
         :platformType, :roomType, :customerAdminRoomId, :customerAdminUserId,
-        :dueDate, :createdAt, :updatedAt
+        :dueDate, :createdAt, :updatedAt, :customer_id
       )
     end
 

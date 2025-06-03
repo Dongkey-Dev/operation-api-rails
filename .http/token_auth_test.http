@@ -1,0 +1,36 @@
+### Environment variables
+@baseUrl = http://localhost:3001/api/v1
+@token = 74b6400cf3f496e98dec39e921e1bfbb
+
+### Test command_responses with token-based filtering
+GET {{baseUrl}}/command_responses
+Authorization: Bearer {{token}}
+
+### Test active command_responses with token-based filtering
+GET {{baseUrl}}/command_responses/active
+Authorization: Bearer {{token}}
+
+### Test command_responses by command with token-based filtering
+# Replace 1 with a valid command ID that belongs to the customer associated with the token
+GET {{baseUrl}}/command_responses/by_command/1
+Authorization: Bearer {{token}}
+
+### Test active command_responses by command with token-based filtering
+# Replace 1 with a valid command ID that belongs to the customer associated with the token
+GET {{baseUrl}}/command_responses/active/by_command/1
+Authorization: Bearer {{token}}
+
+### Test creating a command_response with token-based authorization
+# The command_id must belong to the customer associated with the token
+POST {{baseUrl}}/command_responses
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "command_response": {
+    "command_id": 1,
+    "content": "This is a test response created with token authentication",
+    "response_type": "text",
+    "priority": 5
+  }
+}

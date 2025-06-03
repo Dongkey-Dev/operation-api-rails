@@ -12,7 +12,7 @@
 12. Code Style and Formatting - Consistent code style and formatting standards
 13. Code Organization and Structure - Clear organization and structure of code files and directories
 14. If you have worked on something like a code design level pattern, update the documentation in docs folder.
-15. After implementing a feature, when testing with curl, since running the server with rails s -b 0.0.0.0 -p 3001 always enables hot reload, please check if the server is running on port 3001. If it’s not running, start it and then run the curl test.
+15. After implementing a feature, when testing with curl, since running the server with rails s -b 0.0.0.0 -p 3001 always enables hot reload, please check if the server is running on port 3001. If it’s not running, start it and then run the curl test. you don't need to kill the server for hot reload.
 16. IncludableResources Pattern - A reusable concern for handling API resource includes with limits
 
 ## IncludableResources Pattern

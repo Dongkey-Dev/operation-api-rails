@@ -1,5 +1,11 @@
-class Api::V1::ChatMessagesController < ApplicationController
+class Api::V1::ChatMessagesController < Api::ApiController
+  include Pagy::Backend
+
+  before_action :authenticate_user
   before_action :set_chat_message, only: %i[ show ]
+  
+  # Configure token-based customer filtering for ChatMessage
+  filter_by_token_customer ChatMessage
 
   # Define scopes that can be used for filtering
   has_scope :by_operation_room, as: :operation_room_id
@@ -14,7 +20,10 @@ class Api::V1::ChatMessagesController < ApplicationController
     param! :cursor, String, transform: :presence
 
     # Build base query
-    @resources = apply_scopes(ChatMessage).order(created_at: :desc)
+    # Token-based customer filtering is automatically applied by the TokenCustomerFiltering concern
+    base_query = apply_scopes(ChatMessage)
+    
+    @resources = base_query.order(created_at: :desc)
     
     # Apply cursor-based pagination
     if params[:cursor].present?
@@ -47,5 +56,10 @@ class Api::V1::ChatMessagesController < ApplicationController
     # Use callbacks to share common setup or constraints between actions.
     def set_chat_message
       @chat_message = ChatMessage.find(params[:id])
+    end
+    
+    # Override Pundit's current_user method to use our @current_user
+    def pundit_user
+      @current_user
     end
 end

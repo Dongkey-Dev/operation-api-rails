@@ -3,7 +3,10 @@ class Api::V1::CommandsController < Api::ApiController
   include IncludableResources
 
   before_action :authenticate_user
-  before_action :set_command, only: %i[show update destroy toggle_active]
+  before_action :set_command, only: %i[show update destroy]
+  
+  # Configure token-based customer filtering for Command
+  filter_by_token_customer Command
 
   # Define scopes that can be used for filtering
   has_scope :active, type: :boolean
@@ -27,24 +30,32 @@ class Api::V1::CommandsController < Api::ApiController
   def index
     # Validate and transform parameters
     param! :active, :boolean
+    param! :is_active, :boolean
     param! :customer_id, Integer, transform: :presence
     param! :operation_room_id, Integer, transform: :presence
     param! :keyword, String, transform: :presence
     param! :include, String, transform: :presence
     param! :limit, Integer, default: 25, min: 1, max: 100
     param! :page, Integer, default: 1, min: 1
-    param! :sort_by, String, in: %w[keyword created_at updated_at], default: 'created_at'
-    param! :sort_order, String, in: %w[asc desc], default: 'desc'
+    param! :sort_by, String, in: %w[trigger created_at updated_at], default: "created_at"
+    param! :sort_order, String, in: %w[asc desc], default: "desc"
 
     # Apply scopes with policy_scope for authorization
+    # Token-based customer filtering is automatically applied by the TokenCustomerFiltering concern
     base_query = policy_scope(apply_scopes(Command))
+
+    # Apply active filter if specified (for backward compatibility)
+    base_query = base_query.active if params[:active].present?
+
+    # Apply is_active filter if specified
+    base_query = base_query.where(is_active: params[:is_active]) if params[:is_active].present?
 
     # Apply sorting
     base_query = base_query.order(params[:sort_by] => params[:sort_order])
 
     # Apply pagination and includes
-    result = with_includes_and_pagination(base_query, 
-                                         items_per_page: params[:limit], 
+    result = with_includes_and_pagination(base_query,
+                                         items_per_page: params[:limit],
                                          page_number: params[:page])
 
     # Render response with pagination metadata
@@ -64,8 +75,8 @@ class Api::V1::CommandsController < Api::ApiController
     param! :include, String, transform: :presence
     param! :limit, Integer, default: 25, min: 1, max: 100
     param! :page, Integer, default: 1, min: 1
-    param! :sort_by, String, in: %w[keyword created_at updated_at], default: 'created_at'
-    param! :sort_order, String, in: %w[asc desc], default: 'desc'
+    param! :sort_by, String, in: %w[keyword created_at updated_at], default: "created_at"
+    param! :sort_order, String, in: %w[asc desc], default: "desc"
 
     # Apply scopes with active filter
     base_query = policy_scope(apply_scopes(Command.active))
@@ -93,8 +104,8 @@ class Api::V1::CommandsController < Api::ApiController
     param! :include, String, transform: :presence
     param! :limit, Integer, default: 25, min: 1, max: 100
     param! :page, Integer, default: 1, min: 1
-    param! :sort_by, String, in: %w[keyword created_at updated_at], default: 'created_at'
-    param! :sort_order, String, in: %w[asc desc], default: 'desc'
+    param! :sort_by, String, in: %w[keyword created_at updated_at], default: "created_at"
+    param! :sort_order, String, in: %w[asc desc], default: "desc"
 
     # Find the customer first to ensure it exists and user has access
     customer = Customer.find(params[:id])
@@ -102,7 +113,7 @@ class Api::V1::CommandsController < Api::ApiController
 
     # Apply scopes with customer filter
     base_query = policy_scope(apply_scopes(Command.by_customer(params[:id])))
-    
+
     # Apply active filter if specified
     base_query = base_query.active if params[:active]
 
@@ -128,8 +139,8 @@ class Api::V1::CommandsController < Api::ApiController
     param! :include, String, transform: :presence
     param! :limit, Integer, default: 25, min: 1, max: 100
     param! :page, Integer, default: 1, min: 1
-    param! :sort_by, String, in: %w[keyword created_at updated_at], default: 'created_at'
-    param! :sort_order, String, in: %w[asc desc], default: 'desc'
+    param! :sort_by, String, in: %w[keyword created_at updated_at], default: "created_at"
+    param! :sort_order, String, in: %w[asc desc], default: "desc"
 
     # Find the customer first to ensure it exists and user has access
     customer = Customer.find(params[:id])
@@ -161,8 +172,8 @@ class Api::V1::CommandsController < Api::ApiController
     param! :include, String, transform: :presence
     param! :limit, Integer, default: 25, min: 1, max: 100
     param! :page, Integer, default: 1, min: 1
-    param! :sort_by, String, in: %w[keyword created_at updated_at], default: 'created_at'
-    param! :sort_order, String, in: %w[asc desc], default: 'desc'
+    param! :sort_by, String, in: %w[keyword created_at updated_at], default: "created_at"
+    param! :sort_order, String, in: %w[asc desc], default: "desc"
 
     # Find the operation room first to ensure it exists and user has access
     operation_room = OperationRoom.find(params[:id])
@@ -170,7 +181,7 @@ class Api::V1::CommandsController < Api::ApiController
 
     # Apply scopes with operation room filter
     base_query = policy_scope(apply_scopes(Command.by_operation_room(params[:id])))
-    
+
     # Apply active filter if specified
     base_query = base_query.active if params[:active]
 
@@ -196,8 +207,8 @@ class Api::V1::CommandsController < Api::ApiController
     param! :include, String, transform: :presence
     param! :limit, Integer, default: 25, min: 1, max: 100
     param! :page, Integer, default: 1, min: 1
-    param! :sort_by, String, in: %w[keyword created_at updated_at], default: 'created_at'
-    param! :sort_order, String, in: %w[asc desc], default: 'desc'
+    param! :sort_by, String, in: %w[keyword created_at updated_at], default: "created_at"
+    param! :sort_order, String, in: %w[asc desc], default: "desc"
 
     # Find the operation room first to ensure it exists and user has access
     operation_room = OperationRoom.find(params[:id])
@@ -231,6 +242,10 @@ class Api::V1::CommandsController < Api::ApiController
   # POST /api/v1/commands
   def create
     @command = Command.new(command_params)
+
+    # Set customer_id from token if not provided
+    @command.customer_id = current_customer.id if @command.customer_id.blank? && current_customer.present?
+
     authorize @command
 
     if @command.save
@@ -243,24 +258,19 @@ class Api::V1::CommandsController < Api::ApiController
   # PATCH/PUT /api/v1/commands/1
   def update
     authorize @command
-    
-    if @command.update(command_params)
-      render json: { data: @command }
-    else
-      render json: { errors: format_errors(@command.errors) }, status: :unprocessable_entity
-    end
-  end
 
-  # PUT /api/v1/commands/1/toggle_active
-  def toggle_active
-    authorize @command
-    
-    new_status = !@command.is_active
-    if @command.update(is_active: new_status)
-      render json: { 
-        data: @command,
-        message: "Command is now #{new_status ? 'active' : 'inactive'}"
-      }
+    # Check if this is a toggle_active request
+    if params[:command].key?(:toggle_active) && params[:command][:toggle_active].present?
+      # Toggle the active status
+      new_status = !@command.is_active
+      params[:command][:is_active] = new_status
+      toggle_message = "Command is now #{new_status ? 'active' : 'inactive'}"
+    end
+
+    if @command.update(command_params)
+      response = { data: @command }
+      response[:message] = toggle_message if toggle_message.present?
+      render json: response
     else
       render json: { errors: format_errors(@command.errors) }, status: :unprocessable_entity
     end
@@ -274,46 +284,44 @@ class Api::V1::CommandsController < Api::ApiController
   end
 
   private
-    # Authenticate user from token
+    # Authenticate user from token - using Authentication module
     def authenticate_user
-      # For now, we'll use a simple token-based authentication
-      # In a real application, you would use JWT or another authentication method
-      token = request.headers['Authorization']&.split(' ')&.last
-      @current_user = Customer.find_by(token: token)
-      
+      @current_user = current_customer
+
       unless @current_user
         render json: {
-          errors: [{
+          errors: [ {
             code: "unauthorized",
             detail: "You need to sign in or sign up before continuing."
-          }]
+          } ]
         }, status: :unauthorized
       end
     end
-  
+
     # Use callbacks to share common setup or constraints between actions.
     def set_command
       @command = Command.find(params[:id])
     rescue ActiveRecord::RecordNotFound
-      render json: { 
-        errors: [{
+      render json: {
+        errors: [ {
           code: "not_found",
           detail: "Command not found"
-        }]
+        } ]
       }, status: :not_found
     end
 
     # Only allow a list of trusted parameters through.
     def command_params
       params.require(:command).permit(
-        :keyword, 
-        :description, 
-        :customer_id, 
-        :operation_room_id, 
-        :is_active
+        :keyword,
+        :description,
+        :customer_id,
+        :operation_room_id,
+        :is_active,
+        :toggle_active
       )
     end
-    
+
     # Format error messages
     def format_errors(errors)
       errors.map do |error|
@@ -326,7 +334,7 @@ class Api::V1::CommandsController < Api::ApiController
         }
       end
     end
-    
+
     # Map error attributes to error codes
     def error_code_for(attribute)
       {
@@ -338,7 +346,7 @@ class Api::V1::CommandsController < Api::ApiController
         base: "validation_error"
       }[attribute.to_sym] || "validation_error"
     end
-    
+
     # Override Pundit's current_user method to use our @current_user
     def pundit_user
       @current_user

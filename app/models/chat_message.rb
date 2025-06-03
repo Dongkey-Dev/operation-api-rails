@@ -1,4 +1,5 @@
 class ChatMessage < ApplicationRecord
+  include TokenScopable
   # Associations
   belongs_to :operation_room
   belongs_to :user, foreign_key: "user_id"

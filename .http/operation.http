@@ -585,25 +585,26 @@ DELETE http://{{baseUrl}}/room_users/1
 ###############################################
 
 ### Get all commands
-GET http://{{baseUrl}}/commands
+GET http://{{baseUrl}}/commands?include=command_responses
+Authorization: Bearer 74b6400cf3f496e98dec39e921e1bfbb
 
 ### Get command by ID
 GET http://{{baseUrl}}/commands/1
 
 ### Get commands by customer ID
-GET http://{{baseUrl}}/commands/customer/1
+GET http://{{baseUrl}}/commands?customer_id=1
 
 ### Get commands by operation room ID
-GET http://{{baseUrl}}/commands/room/1
+GET http://{{baseUrl}}/commands?operation_room_id=1
 
 ### Get active commands
-GET http://{{baseUrl}}/commands/active
+GET http://{{baseUrl}}/commands?active=true
 
 ### Get active commands by customer ID
-GET http://{{baseUrl}}/commands/active/customer/1
+GET http://{{baseUrl}}/commands?active=true&customer_id=1
 
 ### Get active commands by operation room ID
-GET http://{{baseUrl}}/commands/active/room/1
+GET http://{{baseUrl}}/commands?active=true&operation_room_id=1
 
 ### Create a new command
 POST http://{{baseUrl}}/commands
@@ -626,9 +627,6 @@ Content-Type: application/json
   "description": "Updated greeting command",
   "isActive": true
 }
-
-### Toggle command active status
-PUT http://{{baseUrl}}/commands/toggle_active/1
 
 ### Delete a command
 DELETE http://{{baseUrl}}/commands/1
