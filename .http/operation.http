@@ -235,7 +235,7 @@ Content-Type: application/json
 ###############################################
 
 ### Get all operation rooms
-GET http://{{baseUrl}}/operation_rooms?include=room_users
+GET http://{{baseUrl}}/operation_rooms?include=room_features
 Authorization: Bearer 74b6400cf3f496e98dec39e921e1bfbb
 ### Get all operation rooms
 GET http://{{baseUrl}}/operation_rooms?limit=100
@@ -372,14 +372,19 @@ DELETE http://{{baseUrl}}/operation_rooms/1
 
 ### Get all features
 GET http://{{baseUrl}}/features
+Authorization: Bearer 74b6400cf3f496e98dec39e921e1bfbb
+
+### Get all features with room features
+GET http://{{baseUrl}}/features?include=room_features
+Authorization: Bearer 74b6400cf3f496e98dec39e921e1bfbb
 
 ### Get feature by ID
 GET http://{{baseUrl}}/features/1
-
+Authorization: Bearer 74b6400cf3f496e98dec39e921e1bfbb
 ### Create a new feature
 POST http://{{baseUrl}}/features
 Content-Type: application/json
-
+Authorization: Bearer eemKIvokZMQPMcCdxjsXvcic9bapBF6EhHVHoU_uVN8
 {
   "name": "Advanced Analytics",
   "description": "Provides advanced analytics capabilities",
@@ -389,7 +394,7 @@ Content-Type: application/json
 ### Update a feature
 PUT http://{{baseUrl}}/features/1
 Content-Type: application/json
-
+Authorization: Bearer eemKIvokZMQPMcCdxjsXvcic9bapBF6EhHVHoU_uVN8
 {
   "name": "Premium Analytics",
   "description": "Provides premium analytics capabilities with visualizations",
@@ -398,23 +403,24 @@ Content-Type: application/json
 
 ### Delete a feature
 DELETE http://{{baseUrl}}/features/1
-
+Authorization: Bearer eemKIvokZMQPMcCdxjsXvcic9bapBF6EhHVHoU_uVN8
 ###############################################
 # Room Features API
 ###############################################
 
 ### Get all room features
 GET http://{{baseUrl}}/room_features
-
+Authorization: Bearer 74b6400cf3f496e98dec39e921e1bfbb
 ### Get room feature by ID
 GET http://{{baseUrl}}/room_features/1
-
+Authorization: Bearer 74b6400cf3f496e98dec39e921e1bfbb
 ### Get room features by room ID
-GET http://{{baseUrl}}/room_features/by_room/1
-
+GET http://{{baseUrl}}/room_features?room_id=1
+Authorization: Bearer 74b6400cf3f496e98dec39e921e1bfbb
 ### Create a new room feature
 POST http://{{baseUrl}}/room_features
 Content-Type: application/json
+Authorization: Bearer 74b6400cf3f496e98dec39e921e1bfbb
 
 {
   "operationRoomId": 1,
@@ -642,13 +648,13 @@ GET http://{{baseUrl}}/command_responses
 GET http://{{baseUrl}}/command_responses/1
 
 ### Get command responses by command ID
-GET http://{{baseUrl}}/command_responses/by_command/1
+GET http://{{baseUrl}}/command_responses?command_id=1
 
 ### Get active command responses
-GET http://{{baseUrl}}/command_responses/active
+GET http://{{baseUrl}}/command_responses?active=true
 
 ### Get active command responses by command ID
-GET http://{{baseUrl}}/command_responses/active/by_command/1
+GET http://{{baseUrl}}/command_responses?active=true&command_id=1
 
 ### Create a new command response
 POST http://{{baseUrl}}/command_responses
@@ -670,9 +676,6 @@ Content-Type: application/json
   "responseType": "text",
   "isActive": true
 }
-
-### Toggle command response active status
-PUT http://{{baseUrl}}/command_responses/1/toggle_active
 
 ### Delete a command response
 DELETE http://{{baseUrl}}/command_responses/1

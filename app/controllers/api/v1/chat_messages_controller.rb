@@ -3,7 +3,7 @@ class Api::V1::ChatMessagesController < Api::ApiController
 
   before_action :authenticate_user
   before_action :set_chat_message, only: %i[ show ]
-  
+
   # Configure token-based customer filtering for ChatMessage
   filter_by_token_customer ChatMessage
 
@@ -22,15 +22,15 @@ class Api::V1::ChatMessagesController < Api::ApiController
     # Build base query
     # Token-based customer filtering is automatically applied by the TokenCustomerFiltering concern
     base_query = apply_scopes(ChatMessage)
-    
+
     @resources = base_query.order(created_at: :desc)
-    
+
     # Apply cursor-based pagination
     if params[:cursor].present?
       cursor_time = Time.zone.parse(params[:cursor])
-      @resources = @resources.where('created_at < ?', cursor_time)
+      @resources = @resources.where("created_at < ?", cursor_time)
     end
-    
+
     # Apply limit
     @resources = @resources.limit(params[:limit])
     total_count = @resources.except(:limit, :offset).count
@@ -57,7 +57,7 @@ class Api::V1::ChatMessagesController < Api::ApiController
     def set_chat_message
       @chat_message = ChatMessage.find(params[:id])
     end
-    
+
     # Override Pundit's current_user method to use our @current_user
     def pundit_user
       @current_user

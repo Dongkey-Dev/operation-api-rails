@@ -7,8 +7,8 @@ class Api::V1::OperationRoomsController < Api::ApiController
 
   # Configure allowed includes and their default limits
   configure_includes do |config|
-    config.allowed_includes = %w[room_users customer_admin_room customer_admin_user features plans]
-    config.default_limits = { room_users: 10 }
+    config.allowed_includes = %w[room_users customer_admin_room customer_admin_user features plans room_features]
+    config.default_limits = { room_users: 10, room_features: 20 }
   end
 
   # Define scopes that can be used for filtering
