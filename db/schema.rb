@@ -150,6 +150,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_03_114019) do
     t.datetime "left_at", precision: nil
   end
 
+  create_table "attendances", id: :serial, force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "operation_room_id"
+    t.datetime "created_at", precision: nil, default: -> { "now()" }
+    t.datetime "updated_at", precision: nil, default: -> { "now()" }
+  end
+
   add_foreign_key "chat_messages", "operation_rooms", name: "chat_messages_operation_room_id_operation_rooms_id_fk"
   add_foreign_key "command_responses", "commands", name: "command_responses_command_id_commands_id_fk"
   add_foreign_key "commands", "customers", name: "commands_customer_id_customers_id_fk"

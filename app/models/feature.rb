@@ -2,38 +2,38 @@ class Feature < ApplicationRecord
   # Associations
   has_many :room_features, dependent: :destroy
   has_many :operation_rooms, through: :room_features
-  
+
   # Add serializable configuration for IncludableResources
   def self.includable_associations
     {
       room_features: { limit: 10 }
     }
   end
-  
+
   # Override as_json to include associations when requested
   def as_json(options = {})
     options ||= {}
-    
+
     # Start with default attributes
     json = super(options.except(:include))
-    
+
     # Handle includes if present
     if options[:include].present?
-      includes = options[:include].is_a?(Hash) ? options[:include].keys : 
-                options[:include].is_a?(Array) ? options[:include] : 
-                [options[:include]]
-      
+      includes = options[:include].is_a?(Hash) ? options[:include].keys :
+                options[:include].is_a?(Array) ? options[:include] :
+                [ options[:include] ]
+
       # Include room_features if requested
-      if includes.map(&:to_s).include?('room_features')
-        json['room_features'] = room_features.map { |rf| rf.as_json(options.except(:include)) }
+      if includes.map(&:to_s).include?("room_features")
+        json["room_features"] = room_features.map { |rf| rf.as_json(options.except(:include)) }
       end
-      
+
       # Include operation_rooms if requested
-      if includes.map(&:to_s).include?('operation_rooms')
-        json['operation_rooms'] = operation_rooms.map { |op_room| op_room.as_json(options.except(:include)) }
+      if includes.map(&:to_s).include?("operation_rooms")
+        json["operation_rooms"] = operation_rooms.map { |op_room| op_room.as_json(options.except(:include)) }
       end
     end
-    
+
     json
   end
 

@@ -7,7 +7,7 @@ class OperationRoom < ApplicationRecord
   has_many :commands, dependent: :destroy
   has_many :room_features, dependent: :destroy
   has_many :features, through: :room_features
-  
+
   # Add serializable configuration for IncludableResources
   def self.includable_associations
     {

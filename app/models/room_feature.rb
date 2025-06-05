@@ -7,7 +7,7 @@ class RoomFeature < ApplicationRecord
   validates :operation_room_id, presence: true
   validates :feature_id, presence: true
   validates :feature_id, uniqueness: { scope: :operation_room_id, message: "is already enabled for this room" }
-  validates :is_active, inclusion: { in: [true, false] }, allow_nil: true
+  validates :is_active, inclusion: { in: [ true, false ] }, allow_nil: true
 
   # Scopes
   scope :active, -> { where(is_active: true) }

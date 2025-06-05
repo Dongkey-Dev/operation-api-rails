@@ -1,10 +1,10 @@
 class Api::V1::RoomFeaturesController < Api::ApiController
   include Pagy::Backend
   include IncludableResources
-  
+
   before_action :authenticate_user
   before_action :set_room_feature, only: %i[show update destroy]
-  
+
   configure_includes do |config|
     config.allowed_includes = %w[operation_room feature]
     config.default_limits = {
@@ -16,7 +16,7 @@ class Api::V1::RoomFeaturesController < Api::ApiController
   # GET /api/v1/room_features
   def index
     # Validate and transform parameters
-    param! :room_id, Integer, transform: :presence
+    param! :operation_room_id, Integer, transform: :presence
     param! :feature_id, Integer, transform: :presence
     param! :is_active, :boolean
     param! :include, String, transform: :presence
@@ -27,20 +27,20 @@ class Api::V1::RoomFeaturesController < Api::ApiController
 
     # Apply policy scope for authorization
     base_query = policy_scope(RoomFeature)
-    
+
     # Apply filters
-    base_query = base_query.by_operation_room(params[:room_id]) if params[:room_id].present?
+    base_query = base_query.by_operation_room(params[:operation_room_id]) if params[:operation_room_id].present?
     base_query = base_query.by_feature(params[:feature_id]) if params[:feature_id].present?
     base_query = params[:is_active] ? base_query.active : base_query.inactive if params[:is_active].present?
-    
+
     # Apply sorting
     base_query = base_query.order(params[:sort_by] => params[:sort_order])
-    
+
     # Apply pagination and includes
     result = with_includes_and_pagination(base_query,
                                        items_per_page: params[:limit],
                                        page_number: params[:page])
-    
+
     # Render response with pagination metadata
     render json: {
       data: result[:records],
@@ -53,29 +53,43 @@ class Api::V1::RoomFeaturesController < Api::ApiController
   # GET /api/v1/room_features/1
   def show
     authorize @room_feature
-    
+
     # Apply includes for the single record
     with_includes_for_record(@room_feature)
-    
+
     render json: { data: @room_feature }
   end
 
   # POST /api/v1/room_features
   def create
-    @room_feature = RoomFeature.new(room_feature_params)
-    authorize @room_feature
+    # Check if a room feature with the same operation_room_id and feature_id already exists
+    existing_room_feature = RoomFeature.find_by(
+      operation_room_id: room_feature_params[:operation_room_id],
+      feature_id: room_feature_params[:feature_id]
+    )
 
-    if @room_feature.save
-      render json: { data: @room_feature }, status: :created
+    if existing_room_feature
+      # If it exists, return the existing record
+      @room_feature = existing_room_feature
+      authorize @room_feature
+      render json: { data: @room_feature }
     else
-      render json: { errors: format_validation_errors(@room_feature) }, status: :unprocessable_entity
+      # If it doesn't exist, create a new one
+      @room_feature = RoomFeature.new(room_feature_params)
+      authorize @room_feature
+
+      if @room_feature.save
+        render json: { data: @room_feature }, status: :created
+      else
+        render json: { errors: format_validation_errors(@room_feature) }, status: :unprocessable_entity
+      end
     end
   end
 
   # PATCH/PUT /api/v1/room_features/1
   def update
     authorize @room_feature
-    
+
     if @room_feature.update(room_feature_params)
       render json: { data: @room_feature }
     else
