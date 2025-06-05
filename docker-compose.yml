@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: postgres-17
+    restart: always
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_USER: backoffice
+      POSTGRES_PASSWORD: qwer4321!
+      POSTGRES_DB: chatbot_service
+    volumes:
+      - chatbot_service:/var/lib/postgresql/data
+
+
+
+volumes:
+  chatbot_service:
