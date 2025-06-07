@@ -20,6 +20,7 @@ Rails.application.routes.draw do
       resources :operation_rooms
       resources :customer_admin_rooms
       resources :customers
+      resources :attendances
     end
   end
 

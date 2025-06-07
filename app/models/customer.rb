@@ -5,15 +5,15 @@ class Customer < ApplicationRecord
   has_many :admin_rooms, class_name: "OperationRoom", foreign_key: "customer_admin_user_id", dependent: :nullify
   has_many :room_users, foreign_key: "user_id", primary_key: "user_id", dependent: :destroy
   has_many :member_operation_rooms, through: :room_users, source: :operation_room
-  
+
   # Callbacks
   before_create :generate_token
-  
+
   # Authorization methods
   def admin?
     is_admin
   end
-  
+
   # Token management
   def generate_token
     self.token = loop do
@@ -21,7 +21,7 @@ class Customer < ApplicationRecord
       break random_token unless Customer.exists?(token: random_token)
     end
   end
-  
+
   def regenerate_token!
     generate_token
     save!
@@ -50,6 +50,7 @@ class Customer < ApplicationRecord
   scope :update_phone, ->(id, new_phone) { find_by(id: id)&.update(phone_number: new_phone) }
   scope :update_password, ->(id, new_password) { find_by(id: id)&.update(password: new_password) }
   scope :record_login, ->(id) { find_by(id: id)&.update(last_login_at: Time.current) }
+  scope :find_by_token, ->(token) { find_by(token: token) }
 
   # Callbacks
   before_validation :ensure_timestamps

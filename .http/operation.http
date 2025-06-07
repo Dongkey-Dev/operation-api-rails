@@ -425,15 +425,18 @@ Authorization: Bearer 74b6400cf3f496e98dec39e921e1bfbb
 {
   "operationRoomId": 1,
   "featureId": 1,
-  "isEnabled": true
+  "isActive": true
 }
 
 ### Update a room feature
-PUT http://{{baseUrl}}/room_features/1
+PUT http://{{baseUrl}}/room_features/5
+Authorization: Bearer 74b6400cf3f496e98dec39e921e1bfbb
 Content-Type: application/json
 
 {
-  "isEnabled": false
+  "room_feature": {
+    "is_active": false
+  }
 }
 
 ### Delete a room feature

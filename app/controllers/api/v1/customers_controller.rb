@@ -57,8 +57,14 @@ class Api::V1::CustomersController < Api::ApiController
     }
   end
 
-  # GET /api/v1/customers/:id
+  # GET /api/v1/customers/:token
   def show
+    # Find customer by token
+    @customer = Customer.find_by_token(params[:token])
+
+    # Return 404 if customer not found
+    return render json: { errors: [ { code: "not_found", detail: "Customer not found" } ] }, status: :not_found unless @customer
+
     # Authorize the customer
     authorize @customer
 
@@ -93,7 +99,7 @@ class Api::V1::CustomersController < Api::ApiController
       }, status: :not_found
       return
     end
-    
+
     # Authorize the customer for the by_user_id action
     authorize @customer, :by_user_id?
 
@@ -137,7 +143,7 @@ class Api::V1::CustomersController < Api::ApiController
       }, status: :not_found
       return
     end
-    
+
     # Authorize the customer for the by_email action
     authorize @customer, :by_email?
 
@@ -158,7 +164,7 @@ class Api::V1::CustomersController < Api::ApiController
   # POST /api/v1/customers
   def create
     @customer = Customer.new(customer_params)
-    
+
     # Authorize the customer creation
     authorize @customer
 
@@ -175,7 +181,7 @@ class Api::V1::CustomersController < Api::ApiController
   def update
     # Authorize the customer update
     authorize @customer
-    
+
     if @customer.update(customer_params)
       render json: { data: @customer }
     else
@@ -189,20 +195,20 @@ class Api::V1::CustomersController < Api::ApiController
   def destroy
     # Authorize the customer deletion
     authorize @customer
-    
+
     @customer.destroy!
     head :no_content
   end
 
   private
-  
+
   # Authenticate user from token
   def authenticate_user
     # For now, we'll use a simple token-based authentication
     # In a real application, you would use JWT or another authentication method
-    token = request.headers['Authorization']&.split(' ')&.last
+    token = request.headers["Authorization"]&.split(" ")&.last
     @current_user = Customer.find_by(token: token)
-    
+
     unless @current_user
       render json: {
         error: {
@@ -250,7 +256,7 @@ class Api::V1::CustomersController < Api::ApiController
       phone_number: "invalid_phone_number"
     }[attribute.to_sym] || "validation_error"
   end
-  
+
   # Override Pundit's current_user method to use our @current_user
   def pundit_user
     @current_user
