@@ -236,9 +236,10 @@ Content-Type: application/json
 
 ### Get all operation rooms
 GET http://{{baseUrl}}/operation_rooms?include=room_features
-Authorization: Bearer 74b6400cf3f496e98dec39e921e1bfbb
+Authorization: Bearer 3f72033f3832aadeefcbff06bc24f218
 ### Get all operation rooms
 GET http://{{baseUrl}}/operation_rooms?limit=100
+Authorization: Bearer 3f72033f3832aadeefcbff06bc24f218
 
 ### Filter operation rooms by platform
 GET http://{{baseUrl}}/operation_rooms?by_platform=KAKAO
@@ -517,38 +518,20 @@ DELETE http://{{baseUrl}}/customer_admin_rooms/1
 
 ### Get all chat messages
 GET http://{{baseUrl}}/chat_messages
-
-### Get chat message by ID
-GET http://{{baseUrl}}/chat_messages/1
+Authorization: Bearer 3f72033f3832aadeefcbff06bc24f218
 
 ### Get chat messages by room ID
-GET http://{{baseUrl}}/chat_messages/by_room/1
-
+GET http://{{baseUrl}}/chat_messages?by_room=4
+Authorization: Bearer 3f72033f3832aadeefcbff06bc24f218
 ### Get chat messages by user ID
-GET http://{{baseUrl}}/chat_messages/by_user/1
-
-### Create a new chat message
-POST http://{{baseUrl}}/chat_messages
-Content-Type: application/json
-
-{
-  "operationRoomId": 1,
-  "userId": 1,
-  "content": "Hello, how can I help you today?",
-  "type": "text"
-}
-
-### Update a chat message
-PUT http://{{baseUrl}}/chat_messages/1
-Content-Type: application/json
-
-{
-  "content": "Hello, how may I assist you today?",
-  "isEdited": true
-}
-
-### Delete a chat message
-DELETE http://{{baseUrl}}/chat_messages/1
+# GET http://{{baseUrl}}/chat_messages?by_user=5
+# Authorization: Bearer 3f72033f3832aadeefcbff06bc24f218
+# ### Get chat message counts by period
+GET http://{{baseUrl}}/chat_messages/counts_by_period?start_date=2025-04-01&end_date=2025-06-30&period_unit=day&operation_room_id=9
+Authorization: Bearer 3f72033f3832aadeefcbff06bc24f218
+# Available period_unit values: day, week, month
+# All parameters are optional except start_date, end_date, and period_unit
+# Date format should be YYYY-MM-DD
 
 ###############################################
 # Room Users API

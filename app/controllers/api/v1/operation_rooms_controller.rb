@@ -26,7 +26,7 @@ class Api::V1::OperationRoomsController < Api::ApiController
   def index
     # Build base query with scopes and authorize with policy_scope
     base_query = policy_scope(apply_scopes(OperationRoom))
-    
+
     # Apply token-based customer filtering if no specific customer_id is provided
     base_query = base_query.by_token_customer(current_customer) unless params[:customer_id].present?
 
@@ -43,13 +43,13 @@ class Api::V1::OperationRoomsController < Api::ApiController
     # Apply pagination and includes with limits
     items_per_page = params[:limit].present? ? params[:limit].to_i : 15
     page_number = params[:page].present? ? params[:page].to_i : 1
-    
+
     result = with_includes_and_pagination(
-      base_query, 
-      items_per_page: items_per_page, 
+      base_query,
+      items_per_page: items_per_page,
       page_number: page_number
     )
-    
+
     # Render response with pagination metadata following our API standards
     render json: {
       data: result[:records].as_json(include: result[:include_options]),
@@ -62,22 +62,22 @@ class Api::V1::OperationRoomsController < Api::ApiController
   # GET /api/v1/operation_rooms/1
   def show
     authorize @operation_room
-    
+
     # Apply includes with limits
     result = with_includes_for_record(@operation_room)
-    
+
     render json: result[:record].as_json(include: result[:include_options])
   end
 
   # POST /api/v1/operation_rooms
   def create
     @operation_room = OperationRoom.new(operation_room_params)
-    
+
     # Set customer_id from token if not provided
     if @operation_room.customer_id.blank? && current_customer.present?
       @operation_room.customer_id = current_customer.id
     end
-    
+
     authorize @operation_room
 
     if @operation_room.save
@@ -109,7 +109,7 @@ class Api::V1::OperationRoomsController < Api::ApiController
     # Authenticate user from token - using Authentication module
     def authenticate_user
       @current_user = current_customer
-      
+
       unless @current_user
         render json: {
           error: {

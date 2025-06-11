@@ -12,7 +12,6 @@ Rails.application.routes.draw do
       resources :room_user_nickname_histories
       resources :room_user_events
       resources :room_users
-      resources :chat_messages
       resources :room_features
       resources :features
       resources :room_plan_histories
@@ -21,6 +20,12 @@ Rails.application.routes.draw do
       resources :customer_admin_rooms
       resources :customers
       resources :attendances
+      resources :chat_messages do
+        collection do
+          get :counts_by_period
+          post :send_kakao_message
+        end
+      end
     end
   end
 

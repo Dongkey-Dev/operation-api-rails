@@ -10,7 +10,8 @@ module Authentication
 
   # Find the current customer based on the token in the Authorization header
   def current_customer
-    @current_customer ||= authenticate_with_token
+    return @current_customer if defined?(@current_customer)
+    @current_customer = authenticate_with_token
   end
 
   # Authenticate the customer with the token from the Authorization header

@@ -20,8 +20,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_03_114019) do
     t.text "content", null: false
     t.datetime "created_at", precision: nil, default: -> { "now()" }
     t.bigint "_id", null: false
+    t.bigint "_private_id"
     t.index ["operation_room_id"], name: "index_chat_messages_on_operation_room_id"
     t.index ["user_id"], name: "index_chat_messages_on_user_id"
+    t.index ["created_at"], name: "index_chat_messages_on_created_at"
+    # t.index ["_private_id"], name: "index_chat_messages_on_private_id"
   end
 
   create_table "command_responses", id: :serial, force: :cascade do |t|
@@ -145,7 +148,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_03_114019) do
 
   create_table "room_users", id: :serial, force: :cascade do |t|
     t.integer "operation_room_id", null: false
-    t.integer "user_id", null: false
+    t.bigint "user_id", null: false
     t.text "nickname"
     t.string "role", limit: 20, null: false
     t.datetime "joined_at", precision: nil, default: -> { "now()" }
