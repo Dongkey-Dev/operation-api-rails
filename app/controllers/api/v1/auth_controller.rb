@@ -3,22 +3,22 @@
 module Api
   module V1
     class AuthController < Api::ApiController
-      # Skip authentication for login endpoint
-      skip_before_action :authenticate_user, only: [:login]
+      # Only require authentication for logout and me endpoints
+      before_action :authenticate_user, only: [:logout, :me]
 
       # POST /api/v1/auth/login
       def login
         # Find customer by email and password
         @customer = Customer.find_by(email: params[:email])
-        
+
         if @customer && valid_password?(@customer, params[:password])
           # Generate a new token if one doesn't exist
           @customer.regenerate_token! unless @customer.token.present?
-          
+
           render json: {
             data: {
               id: @customer.id,
-              type: 'customer',
+              type: "customer",
               attributes: {
                 email: @customer.email,
                 name: @customer.name,
@@ -29,11 +29,11 @@ module Api
           }, status: :ok
         else
           render json: {
-            errors: [{
-              code: 'invalid_credentials',
-              detail: 'Invalid email or password',
-              status: '401'
-            }]
+            errors: [ {
+              code: "invalid_credentials",
+              detail: "Invalid email or password",
+              status: "401"
+            } ]
           }, status: :unauthorized
         end
       end
@@ -42,7 +42,7 @@ module Api
       def logout
         # Clear the token
         current_customer.update(token: nil)
-        
+
         head :no_content
       end
 
@@ -51,7 +51,7 @@ module Api
         render json: {
           data: {
             id: current_customer.id,
-            type: 'customer',
+            type: "customer",
             attributes: {
               email: current_customer.email,
               name: current_customer.name,

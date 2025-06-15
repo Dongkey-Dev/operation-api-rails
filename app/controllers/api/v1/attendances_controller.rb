@@ -1,4 +1,4 @@
-class Api::V1::AttendancesController < ApiController
+class Api::V1::AttendancesController < Api::ApiController
   include CursorPagination
   include Pagy::Backend
 

@@ -202,22 +202,7 @@ class Api::V1::CustomersController < Api::ApiController
 
   private
 
-  # Authenticate user from token
-  def authenticate_user
-    # For now, we'll use a simple token-based authentication
-    # In a real application, you would use JWT or another authentication method
-    token = request.headers["Authorization"]&.split(" ")&.last
-    @current_user = Customer.find_by(token: token)
 
-    unless @current_user
-      render json: {
-        error: {
-          code: "unauthorized",
-          message: "You need to sign in or sign up before continuing."
-        }
-      }, status: :unauthorized
-    end
-  end
 
   # Use callbacks to share common setup or constraints between actions.
   def set_customer
@@ -257,8 +242,8 @@ class Api::V1::CustomersController < Api::ApiController
     }[attribute.to_sym] || "validation_error"
   end
 
-  # Override Pundit's current_user method to use our @current_user
+  # Override Pundit's current_user method to use current_customer for authorization
   def pundit_user
-    @current_user
+    current_customer
   end
 end

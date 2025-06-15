@@ -55,8 +55,13 @@ development:
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
 test:
-  <<: *default
-  database: chatbot_service_test
+  primary:
+    <<: *default
+    database: chatbot_service_test
+  queue:
+    <<: *default
+    database: chatbot_service_queue_test
+    migrations_paths: db/queue_migrate
 
 # As with config/credentials.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is
@@ -81,18 +86,20 @@ test:
 production:
   primary: &primary_production
     <<: *default
-    database: operation_bot_production
-    username: operation_bot
-    password: <%= ENV["OPERATION_BOT_DATABASE_PASSWORD"] %>
-  cache:
-    <<: *primary_production
-    database: operation_bot_production_cache
-    migrations_paths: db/cache_migrate
+    database: chatbot_service
+    username: backoffice
+    password: qwer4321!
+    host: localhost
+    port: 5434
+  # cache:
+  #   <<: *primary_production
+  #   database: chatbot_service_cache
+  #   migrations_paths: db/cache_migrate
   queue:
     <<: *primary_production
-    database: operation_bot_production_queue
+    database: chatbot_service_queue
     migrations_paths: db/queue_migrate
-  cable:
-    <<: *primary_production
-    database: operation_bot_production_cable
-    migrations_paths: db/cable_migrate
+  # cable:
+  #   <<: *primary_production
+  #   database: chatbot_service_cable
+  #   migrations_paths: db/cable_migrate

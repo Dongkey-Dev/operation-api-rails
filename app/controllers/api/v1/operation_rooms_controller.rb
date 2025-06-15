@@ -106,19 +106,7 @@ class Api::V1::OperationRoomsController < Api::ApiController
   end
 
   private
-    # Authenticate user from token - using Authentication module
-    def authenticate_user
-      @current_user = current_customer
 
-      unless @current_user
-        render json: {
-          error: {
-            code: "unauthorized",
-            message: "You need to sign in or sign up before continuing."
-          }
-        }, status: :unauthorized
-      end
-    end
 
     # Use callbacks to share common setup or constraints between actions.
     def set_operation_room
@@ -141,8 +129,8 @@ class Api::V1::OperationRoomsController < Api::ApiController
       )
     end
 
-    # Override Pundit's current_user method to use our @current_user
+    # Override Pundit's current_user method to use current_customer for authorization
     def pundit_user
-      @current_user
+      current_customer
     end
 end

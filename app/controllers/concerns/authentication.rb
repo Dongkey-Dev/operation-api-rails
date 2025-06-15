@@ -24,12 +24,12 @@ module Authentication
 
   # Extract the token from the Authorization header
   def extract_token_from_header
-    auth_header = request.headers['Authorization']
+    auth_header = request.headers["Authorization"]
     return nil unless auth_header.present?
 
     # Format: 'Bearer <token>' or just '<token>'
-    if auth_header.start_with?('Bearer ')
-      auth_header.gsub('Bearer ', '')
+    if auth_header.start_with?("Bearer ")
+      auth_header.gsub("Bearer ", "")
     else
       auth_header
     end
@@ -39,11 +39,11 @@ module Authentication
   def authenticate_user
     unless current_customer
       render json: {
-        errors: [{
-          code: 'unauthorized',
-          detail: 'Authentication required',
-          status: '401'
-        }]
+        errors: [ {
+          code: "unauthorized",
+          detail: "Authentication required",
+          status: "401"
+        } ]
       }, status: :unauthorized
     end
   end

@@ -102,9 +102,9 @@ class Api::V1::ChatMessagesController < Api::ApiController
       @chat_message = ChatMessage.find(params[:id])
     end
 
-    # Override Pundit's current_user method to use our @current_user
+    # Override Pundit's current_user method to use current_customer for authorization
     def pundit_user
-      @current_user
+      current_customer
     end
 
   # POST /api/v1/chat_messages/send_kakao_message
