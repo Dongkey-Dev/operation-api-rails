@@ -24,7 +24,16 @@ module Authentication
 
   # Extract the token from the Authorization header
   def extract_token_from_header
-    auth_header = request.headers["Authorization"]
+    # Log all request headers for debugging
+    Rails.logger.debug "REQUEST HEADERS: #{request.headers.to_h}"
+
+    # Try different ways to get the Authorization header
+    auth_header = request.headers["Authorization"] ||
+                 request.headers["HTTP_AUTHORIZATION"] ||
+                 request.headers["HTTP_X_AUTHORIZATION"] ||
+                 request.env["HTTP_AUTHORIZATION"]
+
+    Rails.logger.debug "Authorization header: #{auth_header.inspect}"
     return nil unless auth_header.present?
 
     # Format: 'Bearer <token>' or just '<token>'

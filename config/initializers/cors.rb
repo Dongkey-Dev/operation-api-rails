@@ -7,12 +7,13 @@
 
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    # Allow requests from both localhost:3000 and localhost:3001
-    origins "localhost:3000", "localhost:3001"
+    # Allow requests from both localhost and the production domain
+    origins "localhost:3000", "localhost:3001", "https://server-orcl.dongkey-me.link", "http://server-orcl.dongkey-me.link"
 
     resource "*",
       headers: :any,
       methods: [ :get, :post, :put, :patch, :delete, :options, :head ],
-      credentials: true
+      credentials: true,
+      expose: [ "Authorization" ]
   end
 end
