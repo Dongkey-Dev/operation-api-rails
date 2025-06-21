@@ -2,11 +2,12 @@
 require 'pagy'
 require 'pagy/extras/overflow'
 require 'pagy/extras/metadata'
+require 'pagy/extras/limit'
 
 # Default items per page for each model
 PAGY_ITEMS = {
   'Customer' => 20,
-  'OperationRoom' => 15,
+  'OperationRoom' => 100,
   'Command' => 25,
   'ChatMessage' => 50,
   'RoomUser' => 20
@@ -14,8 +15,9 @@ PAGY_ITEMS = {
 
 # Configure Pagy defaults
 Pagy::DEFAULT.merge!(
-  items: 20,        # Default items per page
+  items: 100,        # Default items per page
   outset: 0,        # Starting page number
   overflow: :last_page,  # Handle overflow by showing the last page
-  metadata: [:page, :items, :pages, :count, :prev, :next]  # Include metadata in response
+  metadata: [:page, :items, :pages, :count, :prev, :next], # Include metadata in response
+  limit_max: 10000
 )

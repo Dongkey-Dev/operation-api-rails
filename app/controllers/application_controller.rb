@@ -1,4 +1,8 @@
 class ApplicationController < ActionController::API
+
+  before_action do
+    Rails.logger.debug "[DEBUG] Request Headers: #{request.headers.env.select { |k, v| k.to_s.start_with?('HTTP_') }}"
+  end
   # Add has_scope for filtering resources
   include HasScope
   # Add Pagy for pagination
@@ -10,7 +14,7 @@ class ApplicationController < ActionController::API
 
   # Configure Pagy
   Pagy::DEFAULT.merge!(
-    items: 20,
+    items: 100,
     outset: 0,
     overflow: :last_page,
     metadata: [:page, :items, :pages, :count, :prev, :next]
@@ -36,7 +40,7 @@ class ApplicationController < ActionController::API
   private
 
   def pagination_params
-    limit = params[:limit].presence || 20
+    limit = params[:limit].presence || 100
     cursor = params[:cursor].presence || 1
     sort_by = params[:sortBy].presence
     sort_order = params[:sortOrder].presence || 'asc'
