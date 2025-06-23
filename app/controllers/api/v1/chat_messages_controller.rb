@@ -75,8 +75,14 @@ class Api::V1::ChatMessagesController < Api::ApiController
       }, status: :unprocessable_entity
     end
 
-    # Build base query with scopes and authorize with policy_scope
-    base_query = apply_scopes(ChatMessage)
+    # Build base query with scopes and authorize with policy_scope to ensure
+    # only messages from operation rooms the current user has access to are counted
+    base_query = policy_scope(apply_scopes(ChatMessage))
+    
+    # Apply operation_room_id filter if provided
+    if params[:operation_room_id].present?
+      base_query = base_query.by_operation_room(params[:operation_room_id])
+    end
 
     # Get counts by period
     counts = base_query.count_by_period(

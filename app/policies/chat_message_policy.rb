@@ -6,24 +6,30 @@ class ChatMessagePolicy < ApplicationPolicy
       if user.respond_to?(:is_admin) && user.is_admin
         scope.all
       else
-        # If user is a customer, only show messages from their operation rooms
+        # Customer가 운영하는 방들의 채팅 메시지만 조회
         if user.is_a?(Customer)
           scope.joins(:operation_room)
-               .joins("INNER JOIN customer_admin_rooms ON operation_rooms.id = customer_admin_rooms.admin_room_id")
-               .where(customer_admin_rooms: { customer_id: user.id })
+               .where(operation_rooms: { customer_admin_user_id: user.id })
         else
-          scope.none # For safety, return no records if user type is unknown
+          scope.none # 안전을 위해 알 수 없는 사용자 타입은 빈 결과 반환
         end
       end
     end
   end
 
-  def index?
-    true
+  def show?
+    return true if user.respond_to?(:is_admin) && user.is_admin
+    
+    # Customer는 자신이 운영하는 방의 메시지만 볼 수 있음
+    if user.is_a?(Customer)
+      record.operation_room.customer_admin_user_id == user.id
+    else
+      false
+    end
   end
 
-  def show?
-    record_belongs_to_user?
+  def index?
+    user.present?
   end
 
   def create?

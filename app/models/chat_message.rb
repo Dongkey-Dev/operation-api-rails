@@ -24,9 +24,9 @@ class ChatMessage < ApplicationRecord
   scope :count_by_period, ->(period_unit, start_date, end_date) {
     raise ArgumentError, "Invalid period unit" unless VALID_PERIOD_UNITS.include?(period_unit)
 
-    select("DATE_TRUNC('#{period_unit}', created_at AT TIME ZONE 'UTC') as period, COUNT(*) as count")
-      .where(created_at: start_date..end_date)
-      .group("DATE_TRUNC('#{period_unit}', created_at AT TIME ZONE 'UTC')")
+    select("DATE_TRUNC('#{period_unit}', chat_messages.created_at AT TIME ZONE 'UTC') as period, COUNT(*) as count")
+      .where(chat_messages: { created_at: start_date..end_date })
+      .group("DATE_TRUNC('#{period_unit}', chat_messages.created_at AT TIME ZONE 'UTC')")
       .order("period ASC")
   }
 
