@@ -49,7 +49,7 @@ group :development, :test do
   gem "factory_bot_rails"
 end
 
-gem "oas_rails", "~> 0.14.0"
+gem "oas_rails", "~> 1.0.1"
 
 # A Really simple way to filter your resources
 gem "has_scope"

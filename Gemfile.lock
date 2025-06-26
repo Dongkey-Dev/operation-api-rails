@@ -73,10 +73,10 @@ GEM
       tzinfo (~> 2.0, >= 2.0.5)
       uri (>= 0.13.1)
     ast (2.4.3)
-    base64 (0.2.0)
+    base64 (0.3.0)
     bcrypt_pbkdf (1.1.1)
-    benchmark (0.4.0)
-    bigdecimal (3.1.9)
+    benchmark (0.4.1)
+    bigdecimal (3.2.2)
     bootsnap (1.18.6)
       msgpack (~> 1.2)
     brakeman (7.0.2)
@@ -89,6 +89,7 @@ GEM
     debug (1.10.0)
       irb (~> 1.10)
       reline (>= 0.3.8)
+    deep_merge (1.2.2)
     dotenv (3.1.8)
     drb (2.2.3)
     easy_talk_two (1.1.2)
@@ -177,10 +178,14 @@ GEM
       racc (~> 1.4)
     nokogiri (1.18.8-x86_64-linux-musl)
       racc (~> 1.4)
-    oas_rails (0.14.0)
-      easy_talk_two (~> 1.1.2)
+    oas_core (1.0.0)
+      activesupport (>= 7.0)
+      deep_merge (~> 1.2, >= 1.2.2)
       method_source (~> 1.0)
       yard (~> 0.9)
+    oas_rails (1.0.1)
+      easy_talk_two (~> 1.1.2)
+      oas_core (~> 1.0.0)
     ostruct (0.6.1)
     pagy (9.3.4)
     parallel (1.27.0)
@@ -282,15 +287,6 @@ GEM
       rubocop-rails (>= 2.30)
     ruby-progressbar (1.13.0)
     securerandom (0.4.1)
-    solid_cable (3.0.8)
-      actioncable (>= 7.2)
-      activejob (>= 7.2)
-      activerecord (>= 7.2)
-      railties (>= 7.2)
-    solid_cache (1.0.7)
-      activejob (>= 7.2)
-      activerecord (>= 7.2)
-      railties (>= 7.2)
     solid_queue (1.1.5)
       activejob (>= 7.1)
       activerecord (>= 7.1)
@@ -298,7 +294,7 @@ GEM
       fugit (~> 1.11.0)
       railties (>= 7.1)
       thor (~> 1.3.1)
-    sorbet-runtime (0.5.12123)
+    sorbet-runtime (0.5.12203)
     sshkit (1.24.0)
       base64
       logger
@@ -345,7 +341,7 @@ DEPENDENCIES
   factory_bot_rails
   has_scope
   kamal
-  oas_rails (~> 0.14.0)
+  oas_rails (~> 1.0.1)
   pagy
   pg (~> 1.1)
   puma (>= 5.0)
@@ -354,8 +350,6 @@ DEPENDENCIES
   rails (~> 8.0.2)
   rails_param (~> 1.3)
   rubocop-rails-omakase
-  solid_cable
-  solid_cache
   solid_queue
   thruster
   tzinfo-data
